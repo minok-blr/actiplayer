@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.flowstate.engine.CyclingEngineTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-07-08T13:38:44.029Z" hostname="l" time="0.044">
+  <properties/>
+  <testcase name="session starts cruising with chill energy" classname="com.flowstate.engine.CyclingEngineTest" time="0.011"/>
+  <testcase name="speed gain with rising heart rate confirms effort in seconds" classname="com.flowstate.engine.CyclingEngineTest" time="0.021"/>
+  <testcase name="speed gain without a monitor still confirms effort" classname="com.flowstate.engine.CyclingEngineTest" time="0.001"/>
+  <testcase name="a short coast does not end effort" classname="com.flowstate.engine.CyclingEngineTest" time="0.001"/>
+  <testcase name="slow rolling and red lights stay in cruise" classname="com.flowstate.engine.CyclingEngineTest" time="0.002"/>
+  <testcase name="speed gain with flat heart rate does not count as effort" classname="com.flowstate.engine.CyclingEngineTest" time="0.0"/>
+  <testcase name="sustained slow riding returns to cruise" classname="com.flowstate.engine.CyclingEngineTest" time="0.002"/>
+  <testcase name="redlining during effort narrows the band to the top" classname="com.flowstate.engine.CyclingEngineTest" time="0.004"/>
+  <testcase name="fast but steady speed alone never fires effort" classname="com.flowstate.engine.CyclingEngineTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

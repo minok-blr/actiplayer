@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.flowstate.app-mergeReleaseResources-43:/values-v24/values-v24.xml",
+            "map": [
+                {
+                    "source": "/home/l/.gradle/caches/8.13/transforms/3736a2fff1f3725cd0d512b0e4d1d2b7/transformed/media3-session-1.5.0/res/values-v24/values-v24.xml",
+                    "from": {
+                        "startLines": "2,3,4,5",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,121,182,248",
+                        "endColumns": "65,60,65,66",
+                        "endOffsets": "116,177,243,310"
+                    }
+                }
+            ]
+        }
+    ]
+}
