@@ -1,12 +1,15 @@
 package com.flowstate.app.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -30,7 +33,7 @@ fun GuideScreen(onClose: () -> Unit) {
             Text(
                 "FLOWSTATE",
                 style = MaterialTheme.typography.labelMedium,
-                color = FlowColors.riding,
+                color = ActiColors.riding,
                 letterSpacing = 2.sp,
             )
             Text(
@@ -41,13 +44,13 @@ fun GuideScreen(onClose: () -> Unit) {
                 modifier = Modifier.padding(top = 6.dp),
             )
             Text(
-                "FlowState watches how you're moving and matches the music's energy — " +
+                "ActiPlayer watches how you're moving and matches the music's energy — " +
                     "hands in gloves, phone in pocket. Here's the whole setup:",
                 style = MaterialTheme.typography.bodyMedium,
-                color = FlowColors.dim,
+                color = ActiColors.dim,
                 modifier = Modifier.padding(top = 10.dp),
             )
-            HorizontalDivider(Modifier.padding(top = 16.dp), color = FlowColors.outline)
+            HorizontalDivider(Modifier.padding(top = 16.dp), color = ActiColors.outline)
         }
 
         GuideStep(
@@ -78,7 +81,7 @@ fun GuideScreen(onClose: () -> Unit) {
         Text(
             "Reopen this guide anytime with the ? button at the top.",
             style = MaterialTheme.typography.bodySmall,
-            color = FlowColors.dim,
+            color = ActiColors.dim,
         )
         Button(
             onClick = onClose,
@@ -95,19 +98,25 @@ fun GuideScreen(onClose: () -> Unit) {
 @Composable
 private fun GuideStep(number: String, title: String, body: String) {
     Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-        Text(
-            number,
-            fontWeight = FontWeight.Black,
-            fontSize = 18.sp,
-            color = FlowColors.riding,
-            modifier = Modifier.width(18.dp),
-        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(30.dp)
+                .background(ActiColors.riding, CircleShape),
+        ) {
+            Text(
+                number,
+                fontWeight = FontWeight.Black,
+                fontSize = 15.sp,
+                color = ActiColors.ground,
+            )
+        }
         Column {
             Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Text(
                 body,
                 style = MaterialTheme.typography.bodyMedium,
-                color = FlowColors.dim,
+                color = ActiColors.dim,
                 modifier = Modifier.padding(top = 2.dp),
             )
         }

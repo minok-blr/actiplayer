@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet"><style>body{margin:0;background:#e9e7e2;font-family:Roboto,system-ui,sans-serif}a{color:#1a1a1a}a:hover{color:#FF5A1F}</style></helmet>
+<div style="padding:40px 44px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;flex-direction:column;gap:6px;max-width:760px">
+<div style="font:600 11px ui-monospace,Menlo,monospace;letter-spacing:1.5px;color:#666">RECREATION · minok-blr/actiplayer@main</div>
+<div style="font:700 22px/1.2 Roboto,sans-serif;color:#1a1a1a">FlowState — current UI (as shipped in the repo)</div>
+<div style="font:400 13px/1.5 Roboto,sans-serif;color:#555">Rebuilt from MainActivity.kt, GuideScreen.kt, SessionScreen.kt, LibraryScreen.kt and Theme.kt. Material 3 defaults fill in what the theme leaves unset (Card = surfaceContainerHighest #36343B, FilterChip selected = secondaryContainer #4A4458). Dark only. Two tabs, no settings, no history, no Spotify.</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+
+<div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px Roboto;color:#444">1 · First launch — GuideScreen</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;padding:24px;display:flex;flex-direction:column;gap:18px;box-sizing:border-box;font-family:Roboto,sans-serif">
+<div><div style="font:500 12px/16px Roboto;letter-spacing:2px;color:#FF5A1F">FLOWSTATE</div><div style="font:900 28px/32px Roboto;margin-top:6px">Music that rides with you</div><div style="font:400 14px/20px Roboto;color:#8B96A8;margin-top:10px">FlowState watches how you're moving and matches the music's energy — hands in gloves, phone in pocket. Here's the whole setup:</div><div style="height:1px;background:#232C3C;margin-top:16px"></div></div>
+<div style="display:flex;gap:14px"><div style="width:18px;font:900 18px/24px Roboto;color:#FF5A1F">1</div><div><div style="font:700 16px/24px Roboto">Rate your music</div><div style="font:400 14px/20px Roboto;color:#8B96A8;margin-top:2px">In the Library tab, rate tracks by energy: 1 = couch, 5 = send it. A handful of each is enough to start. Unrated tracks play as middle energy.</div></div></div>
+<div style="display:flex;gap:14px"><div style="width:18px;font:900 18px/24px Roboto;color:#FF5A1F">2</div><div><div style="font:700 16px/24px Roboto">Pair a heart-rate monitor (optional)</div><div style="font:400 14px/20px Roboto;color:#8B96A8;margin-top:2px">In the Session tab, tap Set up monitor — the app will ask to turn on Bluetooth if it's off. On a Garmin watch, enable Broadcast Heart Rate first (Settings → Sensors &amp; Accessories → Wrist Heart Rate). Chest straps just work.</div></div></div>
+<div style="display:flex;gap:14px"><div style="width:18px;font:900 18px/24px Roboto;color:#FF5A1F">3</div><div><div style="font:700 16px/24px Roboto">Pick your activity, start, pocket the phone</div><div style="font:400 14px/20px Roboto;color:#8B96A8;margin-top:2px">Choose Snowboarding or Cycling on the Session tab (more coming), then tap Start session and ride. Working hard gets your high-energy tracks, easing off calms the music — automatically.</div></div></div>
+<div style="display:flex;gap:14px"><div style="width:18px;font:900 18px/24px Roboto;color:#FF5A1F">4</div><div><div style="font:700 16px/24px Roboto">Override anytime</div><div style="font:400 14px/20px Roboto;color:#8B96A8;margin-top:2px">CHILL / AUTO / HYPE buttons at the bottom of the session screen. AUTO hands control back to the engine.</div></div></div>
+<div style="flex:1"></div>
+<div style="font:400 12px/16px Roboto;color:#8B96A8">Reopen this guide anytime with the ? button at the top.</div>
+<div style="height:56px;border-radius:14px;background:#FF5A1F;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:900 17px Roboto">Got it</div>
+</div></x-import></div>
+
+<div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px Roboto;color:#444">2 · Permission gate — MainActivity.Root</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;padding:32px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;font-family:Roboto,sans-serif">
+<div style="display:flex;flex-direction:column;align-items:center;gap:24px"><div style="font:400 16px/24px Roboto;text-align:center">FlowState needs your music library to play it, and location to tell riding from the chairlift. Nothing leaves the phone.</div><div style="height:40px;padding:0 24px;border-radius:20px;background:#FF5A1F;color:#0B0E14;display:flex;align-items:center;font:500 14px Roboto">Grant permissions</div></div>
+</div></x-import></div>
+
+<div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px Roboto;color:#444">3 · Session tab, idle — IdleScreen</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:Roboto,sans-serif">
+<div style="display:flex;align-items:center"><div style="flex:1;display:flex;height:48px;border-bottom:1px solid #232C3C"><div style="flex:1;display:flex;align-items:center;justify-content:center;font:500 14px Roboto;color:#FF5A1F;position:relative">Session<div style="position:absolute;left:0;right:0;bottom:-1px;height:3px;background:#FF5A1F;border-radius:3px 3px 0 0"></div></div><div style="flex:1;display:flex;align-items:center;justify-content:center;font:500 14px Roboto;color:#8B96A8">Library</div></div><div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font:900 18px Roboto;color:#8B96A8">?</div></div>
+<div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="height:72px;border-radius:16px;background:#FF5A1F;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:900 20px Roboto">Start session</div>
+<div style="font:400 12px/16px Roboto;color:#8B96A8;padding:0 4px">Start, pocket the phone, ride. The music follows what you're doing.</div>
+<div style="background:#36343B;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px"><div><div style="font:500 12px/16px Roboto;letter-spacing:1.5px;color:#8B96A8">ACTIVITY</div><div style="height:1px;background:#232C3C;margin-top:6px"></div></div><div style="display:flex;gap:8px;overflow:hidden"><div style="height:32px;padding:0 16px;border-radius:8px;background:#4A4458;color:#E8DEF8;display:flex;align-items:center;font:500 14px Roboto;white-space:nowrap">Snowboarding</div><div style="height:32px;padding:0 16px;border-radius:8px;border:1px solid #232C3C;color:#8B96A8;display:flex;align-items:center;font:500 14px Roboto;white-space:nowrap">Cycling</div><div style="height:32px;padding:0 16px;border-radius:8px;border:1px solid #232C3C;color:#8B96A8;opacity:.38;display:flex;align-items:center;font:500 14px Roboto;white-space:nowrap">Running · soon</div><div style="height:32px;padding:0 16px;border-radius:8px;border:1px solid #232C3C;color:#8B96A8;opacity:.38;display:flex;align-items:center;font:500 14px Roboto;white-space:nowrap">Hiking · soon</div></div><div style="font:400 12px/16px Roboto;color:#8B96A8">Riding gets the hype, the chairlift chills out, standing around stays mid.</div></div>
+<div style="background:#36343B;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px"><div><div style="font:500 12px/16px Roboto;letter-spacing:1.5px;color:#8B96A8">LIBRARY</div><div style="height:1px;background:#232C3C;margin-top:6px"></div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:#6FDB8F">●</span><span style="font:500 14px/20px Roboto">179 tracks · 15 rated</span></div><div style="font:400 12px/16px Roboto;color:#8B96A8">Unrated tracks play as middle energy (3).</div></div>
+<div style="background:#36343B;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px"><div><div style="font:500 12px/16px Roboto;letter-spacing:1.5px;color:#8B96A8">HEART RATE</div><div style="height:1px;background:#232C3C;margin-top:6px"></div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:#8B96A8">●</span><span style="font:500 14px/20px Roboto">Instinct E — reconnects at session start</span></div><div style="display:flex;gap:8px"><div style="height:40px;padding:0 12px;display:flex;align-items:center;font:500 14px Roboto;color:#FF5A1F">Connect now</div><div style="height:40px;padding:0 12px;display:flex;align-items:center;font:500 14px Roboto;color:#FF5A1F">Forget</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font:400 12px Roboto">Max HR: 190</span><div style="height:40px;padding:0 12px;display:flex;align-items:center;font:500 14px Roboto;color:#FF5A1F">−5</div><div style="height:40px;padding:0 12px;display:flex;align-items:center;font:500 14px Roboto;color:#FF5A1F">+5</div><span style="font:500 11px Roboto;color:#8B96A8">≈ 220 − age</span></div></div>
+<div style="background:#36343B;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px"><div><div style="font:500 12px/16px Roboto;letter-spacing:1.5px;color:#8B96A8">SENSORS</div><div style="height:1px;background:#232C3C;margin-top:6px"></div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:#6FDB8F">●</span><span style="font:500 14px/20px Roboto">Motion · Barometer · GPS</span></div><div style="font:400 12px/16px Roboto;color:#8B96A8">All signals available.</div></div>
+</div></div></x-import></div>
+
+<div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px Roboto;color:#444">4 · Session active — RideBoard (RIDING)</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:Roboto,sans-serif">
+<div style="display:flex;align-items:center"><div style="flex:1;display:flex;height:48px;border-bottom:1px solid #232C3C"><div style="flex:1;display:flex;align-items:center;justify-content:center;font:500 14px Roboto;color:#FF5A1F;position:relative">Session<div style="position:absolute;left:0;right:0;bottom:-1px;height:3px;background:#FF5A1F;border-radius:3px 3px 0 0"></div></div><div style="flex:1;display:flex;align-items:center;justify-content:center;font:500 14px Roboto;color:#8B96A8">Library</div></div><div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font:900 18px Roboto;color:#8B96A8">?</div></div>
+<div style="flex:1;padding:16px;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center"><div style="font:500 12px/16px Roboto;letter-spacing:1.5px;color:#8B96A8">SESSION · SNOWBOARDING</div><div style="flex:1"></div><div style="height:40px;padding:0 12px;display:flex;align-items:center;font:500 14px Roboto;color:#FF5A1F">End</div></div>
+<div style="background:#FF5A1F;border-radius:18px;padding:22px 20px"><div style="font:900 40px/42px Roboto;color:#0B0E14">RIDING</div><div style="font:400 12px/16px Roboto;color:rgba(11,14,20,.8);margin-top:6px">RIDING after 3s: motion=3.1 vert=-2.4 speed=9.8</div></div>
+<div style="margin-top:16px"><div style="display:flex;gap:5px"><div style="flex:1;height:8px;border-radius:4px;background:#232C3C"></div><div style="flex:1;height:8px;border-radius:4px;background:#232C3C"></div><div style="flex:1;height:8px;border-radius:4px;background:#232C3C"></div><div style="flex:1;height:8px;border-radius:4px;background:#F2F5F9"></div><div style="flex:1;height:8px;border-radius:4px;background:#F2F5F9"></div></div><div style="font:500 11px/16px Roboto;letter-spacing:1px;color:#8B96A8;margin-top:6px">ENERGY 4–5</div></div>
+<div style="flex:1"></div>
+<div><div style="font:500 12px/16px Roboto;letter-spacing:1.5px;color:#8B96A8">NOW PLAYING</div><div style="height:1px;background:#232C3C;margin-top:6px"></div></div>
+<div style="font:700 22px/26px Roboto;margin-top:4px">Bleed It Out</div>
+<div style="font:400 14px/20px Roboto;color:#8B96A8">Linkin Park · rated 5</div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:12px"><div style="display:flex;align-items:center;gap:6px;background:#1B2230;border-radius:50px;padding:7px 12px"><span style="font-size:9px;color:#FF5A1F">●</span><span style="font:700 14px Roboto;color:#FFB59D">164 bpm · 86%</span></div><div style="height:40px;padding:0 12px;display:flex;align-items:center;font:500 14px Roboto;color:#8B96A8">Signals</div><div style="flex:1"></div><div style="height:40px;padding:0 24px;border-radius:50px;background:#4A4458;color:#E8DEF8;display:flex;align-items:center;font:700 14px Roboto">Skip ›</div></div>
+<div style="display:flex;gap:10px;margin-top:16px"><div style="flex:1;height:64px;border-radius:14px;background:#151B26;color:#8B96A8;display:flex;align-items:center;justify-content:center;font:900 14px Roboto;letter-spacing:1px">CHILL</div><div style="flex:1;height:64px;border-radius:14px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:900 14px Roboto;letter-spacing:1px">AUTO</div><div style="flex:1;height:64px;border-radius:14px;background:#151B26;color:#8B96A8;display:flex;align-items:center;justify-content:center;font:900 14px Roboto;letter-spacing:1px">HYPE</div></div>
+</div></div></x-import></div>
+
+<div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px Roboto;color:#444">5 · Library tab — LibraryScreen</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:Roboto,sans-serif">
+<div style="display:flex;align-items:center"><div style="flex:1;display:flex;height:48px;border-bottom:1px solid #232C3C"><div style="flex:1;display:flex;align-items:center;justify-content:center;font:500 14px Roboto;color:#8B96A8">Session</div><div style="flex:1;display:flex;align-items:center;justify-content:center;font:500 14px Roboto;color:#FF5A1F;position:relative">Library<div style="position:absolute;left:0;right:0;bottom:-1px;height:3px;background:#FF5A1F;border-radius:3px 3px 0 0"></div></div></div><div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font:900 18px Roboto;color:#8B96A8">?</div></div>
+<div style="font:400 12px/16px Roboto;color:#8B96A8;padding:10px 16px">Rate tracks by energy — 1 couch, 5 send it. Unrated plays as 3.</div>
+<div style="display:flex;gap:8px;padding:0 16px;overflow:hidden"><div style="height:32px;padding:0 16px;border-radius:8px;background:#4A4458;color:#E8DEF8;display:flex;align-items:center;font:500 14px Roboto;white-space:nowrap">All 179</div><div style="height:32px;padding:0 16px;border-radius:8px;border:1px solid #232C3C;color:#8B96A8;display:flex;align-items:center;font:500 14px Roboto;white-space:nowrap">Unrated 164</div><div style="height:32px;padding:0 16px;border-radius:8px;border:1px solid #232C3C;color:#8B96A8;display:flex;align-items:center;font:500 14px Roboto;white-space:nowrap">1–2 6</div><div style="height:32px;padding:0 16px;border-radius:8px;border:1px solid #232C3C;color:#8B96A8;display:flex;align-items:center;font:500 14px Roboto;white-space:nowrap">3 2</div><div style="height:32px;padding:0 16px;border-radius:8px;border:1px solid #232C3C;color:#8B96A8;display:flex;align-items:center;font:500 14px Roboto;white-space:nowrap">4–5 7</div></div>
+<div style="padding:8px 0;display:flex;flex-direction:column">
+<sc-for list="{{ libRows }}" as="t" hint-placeholder-count="8">
+<div style="display:flex;align-items:center;gap:12px;padding:9px 16px"><div style="flex:1;min-width:0"><div style="font:400 16px/24px Roboto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.title }}</div><div style="font:400 12px/16px Roboto;color:#8B96A8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.sub }}</div></div><div style="display:flex;gap:4px"><div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:900 12px Roboto;background:{{ t.b1 }};color:{{ t.c1 }}">1</div><div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:900 12px Roboto;background:{{ t.b2 }};color:{{ t.c2 }}">2</div><div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:900 12px Roboto;background:{{ t.b3 }};color:{{ t.c3 }}">3</div><div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:900 12px Roboto;background:{{ t.b4 }};color:{{ t.c4 }}">4</div><div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:900 12px Roboto;background:{{ t.b5 }};color:{{ t.c5 }}">5</div></div></div>
+</sc-for>
+</div></div></x-import></div>
+
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const rows = [
+      ['Bleed It Out', 'Linkin Park · 2:44', 5], ['Blinding Lights', 'The Weeknd · 3:20', 4], ['Breathe', 'Pink Floyd · 2:49', 1],
+      ['Cold Little Heart', 'Michael Kiwanuka · 9:59', 2], ['Duality', 'Slipknot · 4:12', 5], ['Episode 41: Backcountry basics', 'Snow Talk Podcast · 48:10', null],
+      ['Holocene', 'Bon Iver · 5:36', 1], ['Killing In the Name', 'Rage Against the Machine · 5:13', 5], ['Levitating', 'Dua Lipa · 3:23', 3],
+      ['Midnight City', 'M83 · 4:03', null], ['Nightcall', 'Kavinsky · 4:18', 2], ['Voice 003', 'Unknown artist · 0:41', null],
+    ];
+    const libRows = rows.map(([title, sub, r]) => {
+      const o = { title, sub };
+      for (let i = 1; i <= 5; i++) { o['b' + i] = r === i ? '#FF5A1F' : '#151B26'; o['c' + i] = r === i ? '#0B0E14' : '#8B96A8'; }
+      return o;
+    });
+    return { libRows };
+  }
+}
+</script>
+</body>
+</html>

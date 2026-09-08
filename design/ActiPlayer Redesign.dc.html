@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"><style>body{margin:0;background:#e9e7e2;font-family:'Instrument Sans',system-ui,sans-serif}a{color:#1a1a1a}a:hover{color:#FF5A1F}</style></helmet>
+<div style="padding:40px 44px 60px;display:flex;flex-direction:column;gap:44px">
+
+<div style="display:flex;flex-direction:column;gap:10px;max-width:820px">
+<div style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:1.5px;color:#666">ACTIPLAYER · STORE-READY REDESIGN · ANDROID</div>
+<div style="font:700 26px/1.2 'Instrument Sans';color:#1a1a1a">Music that follows your body. Zero taps mid-activity.</div>
+<div style="font:400 14px/1.55 'Instrument Sans';color:#555;text-wrap:pretty">Assumptions from the brief: Android only, evolving the existing Kotlin/Compose app; sources = local files + Spotify (App Remote, falls back to local); activities = Ski/Snowboard, Cycling, Running, Strength, HIIT, Generic; HR always optional; dark only; metric; 3 tabs (Home / Music / History); full setup wizard; Free + Pro with 7-day trial (Pro = Spotify, extra activities, AI section-seek v2). Kept the repo's exact mode hues (RIDING #FF5A1F / LIFT #4FC3F7 / PAUSED #7E8AA0 on #0B0E14) as the brand: mode color is the message. Type: Instrument Sans for UI, JetBrains Mono for telemetry. Every in-session target ≥ 64 dp (gloves).</div>
+<div style="font:400 13px/1.5 'Instrument Sans';color:#555">Compare with <a href="Current UI.dc.html">the current UI</a>. Architecture + build plan for the implementation model: <a href="ActiPlayer Plan.md">ActiPlayer Plan.md</a>.</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#444">A · FIRST LAUNCH WIZARD</div>
+<div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+
+<div id="A1" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">A1 · Welcome</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;padding:28px 24px 24px;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="font:700 12px 'JetBrains Mono';letter-spacing:2px;color:#FF5A1F">ACTIPLAYER</div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px">
+<div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;gap:6px"><div style="flex:3;height:14px;border-radius:7px;background:#FF5A1F"></div><div style="flex:1;height:14px;border-radius:7px;background:#4FC3F7"></div><div style="flex:2;height:14px;border-radius:7px;background:#FF5A1F"></div><div style="flex:1;height:14px;border-radius:7px;background:#7E8AA0"></div></div><div style="display:flex;gap:6px;font:500 11px 'JetBrains Mono';color:#8B96A8"><div style="flex:3">RIDING</div><div style="flex:1">LIFT</div><div style="flex:2">RIDING</div><div style="flex:1">BREAK</div></div></div>
+<div style="font:700 40px/1.05 'Instrument Sans';letter-spacing:-1px">Music that follows your body.</div>
+<div style="font:400 17px/1.45 'Instrument Sans';color:#8B96A8;text-wrap:pretty">Ride, run, lift or cruise. ActiPlayer reads your motion and heart rate and switches the energy of the music for you. Phone in pocket, gloves on.</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px"><div style="height:64px;border-radius:16px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:700 18px 'Instrument Sans'">Set up in 1 minute</div><div style="height:48px;display:flex;align-items:center;justify-content:center;font:500 15px 'Instrument Sans';color:#8B96A8">I have an account · Restore</div></div>
+</div></x-import></div>
+
+<div id="A2" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">A2 · Pick your activity</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;padding:20px 24px 24px;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="display:flex;gap:6px"><div style="flex:1;height:4px;border-radius:2px;background:#F2F5F9"></div><div style="flex:1;height:4px;border-radius:2px;background:#232C3C"></div><div style="flex:1;height:4px;border-radius:2px;background:#232C3C"></div><div style="flex:1;height:4px;border-radius:2px;background:#232C3C"></div></div>
+<div style="font:700 12px 'JetBrains Mono';letter-spacing:2px;color:#8B96A8;margin-top:28px">1 / 4</div>
+<div style="font:700 30px/1.1 'Instrument Sans';letter-spacing:-.5px;margin-top:8px">What do you do most?</div>
+<div style="font:400 15px/1.45 'Instrument Sans';color:#8B96A8;margin-top:8px">Each activity has its own detection profile. You can switch anytime from Home.</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px">
+<div style="height:104px;border-radius:16px;background:#FF5A1F;color:#0B0E14;padding:14px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box"><div style="width:22px;height:22px;border-radius:50%;border:3px solid #0B0E14"></div><div><div style="font:700 17px 'Instrument Sans'">Ski / Snowboard</div><div style="font:500 11px 'JetBrains Mono';opacity:.75">RIDING · LIFT · BREAK</div></div></div>
+<div style="height:104px;border-radius:16px;background:#151B26;border:1px solid #232C3C;padding:14px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box"><div style="width:22px;height:22px;border-radius:50%;border:3px solid #8B96A8"></div><div><div style="font:700 17px 'Instrument Sans'">Cycling</div><div style="font:500 11px 'JetBrains Mono';color:#8B96A8">EFFORT · CRUISE</div></div></div>
+<div style="height:104px;border-radius:16px;background:#151B26;border:1px solid #232C3C;padding:14px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box"><div style="width:22px;height:22px;border-radius:50%;border:3px solid #8B96A8"></div><div><div style="font:700 17px 'Instrument Sans'">Running</div><div style="font:500 11px 'JetBrains Mono';color:#8B96A8">PUSH · CRUISE · WALK</div></div></div>
+<div style="height:104px;border-radius:16px;background:#151B26;border:1px solid #232C3C;padding:14px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box"><div style="width:22px;height:22px;border-radius:50%;border:3px solid #8B96A8"></div><div><div style="font:700 17px 'Instrument Sans'">Strength</div><div style="font:500 11px 'JetBrains Mono';color:#8B96A8">SET · REST · TIMER</div></div></div>
+<div style="height:104px;border-radius:16px;background:#151B26;border:1px solid #232C3C;padding:14px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box"><div style="width:22px;height:22px;border-radius:50%;border:3px solid #8B96A8"></div><div><div style="font:700 17px 'Instrument Sans'">HIIT</div><div style="font:500 11px 'JetBrains Mono';color:#8B96A8">WORK · REST · INTERVALS</div></div></div>
+<div style="height:104px;border-radius:16px;background:#151B26;border:1px solid #232C3C;padding:14px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box"><div style="width:22px;height:22px;border-radius:50%;border:3px solid #8B96A8"></div><div><div style="font:700 17px 'Instrument Sans'">Anything else</div><div style="font:500 11px 'JetBrains Mono';color:#8B96A8">ACTIVE · EASY · REST</div></div></div>
+</div>
+<div style="flex:1"></div>
+<div style="height:64px;border-radius:16px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:700 18px 'Instrument Sans'">Continue</div>
+</div></x-import></div>
+
+<div id="A3" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">A3 · Music source</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;padding:20px 24px 24px;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="display:flex;gap:6px"><div style="flex:1;height:4px;border-radius:2px;background:#F2F5F9"></div><div style="flex:1;height:4px;border-radius:2px;background:#F2F5F9"></div><div style="flex:1;height:4px;border-radius:2px;background:#232C3C"></div><div style="flex:1;height:4px;border-radius:2px;background:#232C3C"></div></div>
+<div style="font:700 12px 'JetBrains Mono';letter-spacing:2px;color:#8B96A8;margin-top:28px">2 / 4</div>
+<div style="font:700 30px/1.1 'Instrument Sans';letter-spacing:-.5px;margin-top:8px">Where's your music?</div>
+<div style="font:400 15px/1.45 'Instrument Sans';color:#8B96A8;margin-top:8px">Pick one now, add the other later in Music.</div>
+<div style="display:flex;flex-direction:column;gap:12px;margin-top:24px">
+<div style="border-radius:18px;background:#151B26;border:2px solid #F2F5F9;padding:18px;display:flex;flex-direction:column;gap:10px"><div style="display:flex;align-items:center;justify-content:space-between"><div style="font:700 19px 'Instrument Sans'">On this phone</div><div style="width:24px;height:24px;border-radius:50%;background:#F2F5F9;display:flex;align-items:center;justify-content:center"><div style="width:10px;height:10px;border-radius:50%;background:#0B0E14"></div></div></div><div style="font:400 14px/1.45 'Instrument Sans';color:#8B96A8">Found 179 tracks in Music/ and Downloads/. Works offline, on the mountain, no account.</div><div style="display:flex;gap:6px"><div style="height:26px;padding:0 10px;border-radius:13px;background:#1B2230;display:flex;align-items:center;font:500 11px 'JetBrains Mono';color:#F2F5F9">FREE</div><div style="height:26px;padding:0 10px;border-radius:13px;background:#1B2230;display:flex;align-items:center;font:500 11px 'JetBrains Mono';color:#8B96A8">OFFLINE</div><div style="height:26px;padding:0 10px;border-radius:13px;background:#1B2230;display:flex;align-items:center;font:500 11px 'JetBrains Mono';color:#8B96A8">CROSSFADE</div></div></div>
+<div style="border-radius:18px;background:#151B26;border:1px solid #232C3C;padding:18px;display:flex;flex-direction:column;gap:10px"><div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div style="width:22px;height:22px;border-radius:50%;background:#1DB954"></div><div style="font:700 19px 'Instrument Sans'">Spotify</div></div><div style="height:24px;padding:0 9px;border-radius:12px;background:#FF5A1F;color:#0B0E14;display:flex;align-items:center;font:700 11px 'JetBrains Mono'">PRO</div></div><div style="font:400 14px/1.45 'Instrument Sans';color:#8B96A8">Choose a playlist per energy level. ActiPlayer tells the Spotify app what to play. Needs Spotify Premium and a signal.</div><div style="display:flex;gap:6px"><div style="height:26px;padding:0 10px;border-radius:13px;background:#1B2230;display:flex;align-items:center;font:500 11px 'JetBrains Mono';color:#8B96A8">7-DAY TRIAL</div><div style="height:26px;padding:0 10px;border-radius:13px;background:#1B2230;display:flex;align-items:center;font:500 11px 'JetBrains Mono';color:#8B96A8">FALLS BACK TO LOCAL</div></div></div>
+</div>
+<div style="flex:1"></div>
+<div style="height:64px;border-radius:16px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:700 18px 'Instrument Sans'">Continue</div>
+</div></x-import></div>
+
+<div id="A4" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">A4 · Heart rate (optional)</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;padding:20px 24px 24px;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="display:flex;gap:6px"><div style="flex:1;height:4px;border-radius:2px;background:#F2F5F9"></div><div style="flex:1;height:4px;border-radius:2px;background:#F2F5F9"></div><div style="flex:1;height:4px;border-radius:2px;background:#F2F5F9"></div><div style="flex:1;height:4px;border-radius:2px;background:#232C3C"></div></div>
+<div style="font:700 12px 'JetBrains Mono';letter-spacing:2px;color:#8B96A8;margin-top:28px">3 / 4 · OPTIONAL</div>
+<div style="font:700 30px/1.1 'Instrument Sans';letter-spacing:-.5px;margin-top:8px">Add your pulse</div>
+<div style="font:400 15px/1.45 'Instrument Sans';color:#8B96A8;margin-top:8px">Any Bluetooth strap or watch in broadcast mode. When you redline, only your hardest tracks play. Motion decides the mode; heart rate fine-tunes it.</div>
+<div style="margin-top:24px;border-radius:18px;background:#151B26;border:1px solid #232C3C;padding:18px;display:flex;flex-direction:column;gap:12px">
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8">NEARBY</div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;padding:0 14px;border-radius:12px;background:#1B2230"><div style="width:10px;height:10px;border-radius:50%;background:#4FC3F7"></div><div style="flex:1"><div style="font:600 16px 'Instrument Sans'">Instinct E</div><div style="font:500 11px 'JetBrains Mono';color:#8B96A8">GARMIN · BROADCAST HR</div></div><div style="font:700 15px 'Instrument Sans';color:#FF5A1F">Connect</div></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;padding:0 14px;border-radius:12px;background:#1B2230"><div style="width:10px;height:10px;border-radius:50%;background:#4FC3F7"></div><div style="flex:1"><div style="font:600 16px 'Instrument Sans'">Polar H10</div><div style="font:500 11px 'JetBrains Mono';color:#8B96A8">CHEST STRAP</div></div><div style="font:700 15px 'Instrument Sans';color:#FF5A1F">Connect</div></div>
+<div style="font:400 13px/1.4 'Instrument Sans';color:#8B96A8">Garmin: Settings → Sensors → Wrist Heart Rate → Broadcast. Watches take ~20 s to appear.</div>
+</div>
+<div style="margin-top:12px;border-radius:18px;background:#151B26;border:1px solid #232C3C;padding:18px;display:flex;align-items:center;gap:14px"><div style="flex:1"><div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8">MAX HEART RATE</div><div style="font:400 13px/1.4 'Instrument Sans';color:#8B96A8;margin-top:4px">From your age, or type your tested max.</div></div><div style="display:flex;align-items:center;gap:8px"><div style="width:44px;height:44px;border-radius:12px;background:#1B2230;display:flex;align-items:center;justify-content:center;font:700 20px 'Instrument Sans'">−</div><div style="width:56px;text-align:center;font:700 26px 'JetBrains Mono'">188</div><div style="width:44px;height:44px;border-radius:12px;background:#1B2230;display:flex;align-items:center;justify-content:center;font:700 20px 'Instrument Sans'">+</div></div></div>
+<div style="flex:1"></div>
+<div style="display:flex;flex-direction:column;gap:10px"><div style="height:64px;border-radius:16px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:700 18px 'Instrument Sans'">Continue</div><div style="height:44px;display:flex;align-items:center;justify-content:center;font:500 15px 'Instrument Sans';color:#8B96A8">Skip, no monitor</div></div>
+</div></x-import></div>
+
+<div id="A5" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">A5 · Permissions, explained per signal</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;padding:20px 24px 24px;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="display:flex;gap:6px"><div style="flex:1;height:4px;border-radius:2px;background:#F2F5F9"></div><div style="flex:1;height:4px;border-radius:2px;background:#F2F5F9"></div><div style="flex:1;height:4px;border-radius:2px;background:#F2F5F9"></div><div style="flex:1;height:4px;border-radius:2px;background:#F2F5F9"></div></div>
+<div style="font:700 12px 'JetBrains Mono';letter-spacing:2px;color:#8B96A8;margin-top:28px">4 / 4</div>
+<div style="font:700 30px/1.1 'Instrument Sans';letter-spacing:-.5px;margin-top:8px">What the app reads</div>
+<div style="font:400 15px/1.45 'Instrument Sans';color:#8B96A8;margin-top:8px">Nothing leaves your phone. Each signal is asked for once, when you tap it.</div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:24px">
+<div style="display:flex;align-items:center;gap:14px;min-height:72px;padding:14px 16px;border-radius:16px;background:#151B26;border:1px solid #232C3C;box-sizing:border-box"><div style="width:12px;height:12px;border-radius:50%;background:#6FDB8F"></div><div style="flex:1"><div style="font:600 16px 'Instrument Sans'">Music library</div><div style="font:400 13px/1.4 'Instrument Sans';color:#8B96A8">To play the files on this phone.</div></div><div style="font:600 12px 'JetBrains Mono';color:#6FDB8F">GRANTED</div></div>
+<div style="display:flex;align-items:center;gap:14px;min-height:72px;padding:14px 16px;border-radius:16px;background:#151B26;border:1px solid #232C3C;box-sizing:border-box"><div style="width:12px;height:12px;border-radius:50%;background:#6FDB8F"></div><div style="flex:1"><div style="font:600 16px 'Instrument Sans'">Notifications</div><div style="font:400 13px/1.4 'Instrument Sans';color:#8B96A8">Lockscreen player and the mode you're in.</div></div><div style="font:600 12px 'JetBrains Mono';color:#6FDB8F">GRANTED</div></div>
+<div style="display:flex;align-items:center;gap:14px;min-height:72px;padding:14px 16px;border-radius:16px;background:#151B26;border:2px solid #F2F5F9;box-sizing:border-box"><div style="width:12px;height:12px;border-radius:50%;border:2px solid #8B96A8;box-sizing:border-box"></div><div style="flex:1"><div style="font:600 16px 'Instrument Sans'">Location (GPS)</div><div style="font:400 13px/1.4 'Instrument Sans';color:#8B96A8">Speed and altitude tell a run from a chairlift. Session runs with the screen off.</div></div><div style="font:700 14px 'Instrument Sans';color:#FF5A1F">Allow</div></div>
+<div style="display:flex;align-items:center;gap:14px;min-height:72px;padding:14px 16px;border-radius:16px;background:#151B26;border:1px solid #232C3C;box-sizing:border-box"><div style="width:12px;height:12px;border-radius:50%;border:2px solid #8B96A8;box-sizing:border-box"></div><div style="flex:1"><div style="font:600 16px 'Instrument Sans'">Bluetooth</div><div style="font:400 13px/1.4 'Instrument Sans';color:#8B96A8">Only for the heart-rate monitor. Skipped if you skipped that.</div></div><div style="font:600 12px 'JetBrains Mono';color:#8B96A8">LATER</div></div>
+</div>
+<div style="flex:1"></div>
+<div style="height:64px;border-radius:16px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:700 18px 'Instrument Sans'">Finish</div>
+</div></x-import></div>
+
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#444">B · CORE LOOP — HOME → SESSION → RECAP</div>
+<div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+
+<div id="B1" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">B1 · Home (idle) — big Start + readiness</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="flex:1;overflow:auto;padding:16px 20px 20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:700 13px 'JetBrains Mono';letter-spacing:2px;color:#FF5A1F">ACTIPLAYER</div><div style="width:40px;height:40px;border-radius:50%;background:#151B26;display:flex;align-items:center;justify-content:center;font:700 14px 'Instrument Sans';color:#8B96A8">MK</div></div>
+<div style="border-radius:22px;background:#151B26;border:1px solid #232C3C;padding:18px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between"><div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8">ACTIVITY</div><div style="font:600 13px 'Instrument Sans';color:#4FC3F7">Change</div></div>
+<div style="display:flex;align-items:center;gap:14px"><div style="width:48px;height:48px;border-radius:50%;background:#FF5A1F;display:flex;align-items:center;justify-content:center"><div style="width:18px;height:18px;border-radius:50%;border:3px solid #0B0E14"></div></div><div><div style="font:700 22px 'Instrument Sans'">Snowboarding</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8">RIDING → HYPE · LIFT → CHILL · BREAK → MID</div></div></div>
+</div>
+<div style="height:96px;border-radius:22px;background:#FF5A1F;color:#0B0E14;display:flex;align-items:center;justify-content:space-between;padding:0 26px;box-sizing:border-box"><div><div style="font:700 26px 'Instrument Sans';letter-spacing:-.3px">Start session</div><div style="font:500 12px 'JetBrains Mono';opacity:.8">POCKET THE PHONE · WE HANDLE THE REST</div></div><div style="width:0;height:0;border-left:22px solid #0B0E14;border-top:14px solid transparent;border-bottom:14px solid transparent"></div></div>
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8;margin-top:6px">READY CHECK</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:14px;height:68px;padding:0 16px;border-radius:16px;background:#151B26;border:1px solid #232C3C;box-sizing:border-box"><div style="width:10px;height:10px;border-radius:50%;background:#6FDB8F"></div><div style="flex:1"><div style="font:600 16px 'Instrument Sans'">Music · 2 pools</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8">LOCAL 143 TRACKS · SPOTIFY 3 PLAYLISTS</div></div><div style="font:600 13px 'Instrument Sans';color:#8B96A8">›</div></div>
+<div style="display:flex;align-items:center;gap:14px;height:68px;padding:0 16px;border-radius:16px;background:#151B26;border:1px solid #232C3C;box-sizing:border-box"><div style="width:10px;height:10px;border-radius:50%;background:#4FC3F7"></div><div style="flex:1"><div style="font:600 16px 'Instrument Sans'">Instinct E</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8">CONNECTS AT START · MAX 188</div></div><div style="font:600 13px 'Instrument Sans';color:#8B96A8">›</div></div>
+<div style="display:flex;align-items:center;gap:14px;height:68px;padding:0 16px;border-radius:16px;background:#151B26;border:1px solid #232C3C;box-sizing:border-box"><div style="width:10px;height:10px;border-radius:50%;background:#6FDB8F"></div><div style="flex:1"><div style="font:600 16px 'Instrument Sans'">Sensors</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8">MOTION · BAROMETER · GPS</div></div><div style="font:600 13px 'Instrument Sans';color:#8B96A8">›</div></div>
+</div>
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8;margin-top:6px">LAST SESSION</div>
+<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;background:#151B26;border:1px solid #232C3C"><div style="flex:1"><div style="font:600 16px 'Instrument Sans'">Sat · Snowboarding · 3h 12m</div><div style="display:flex;gap:3px;margin-top:8px;height:8px"><div style="flex:5;background:#FF5A1F;border-radius:2px"></div><div style="flex:2;background:#4FC3F7;border-radius:2px"></div><div style="flex:6;background:#FF5A1F;border-radius:2px"></div><div style="flex:2;background:#4FC3F7;border-radius:2px"></div><div style="flex:3;background:#7E8AA0;border-radius:2px"></div><div style="flex:4;background:#FF5A1F;border-radius:2px"></div><div style="flex:2;background:#4FC3F7;border-radius:2px"></div></div></div><div style="font:600 13px 'Instrument Sans';color:#8B96A8">›</div></div>
+</div>
+<div style="height:72px;border-top:1px solid #232C3C;display:flex;background:#0B0E14"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#F2F5F9"><div style="width:20px;height:20px;border-radius:6px;border:2.5px solid #F2F5F9"></div><div style="font:600 11px 'Instrument Sans'">Home</div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#8B96A8"><div style="width:20px;height:20px;border-radius:50%;border:2.5px solid #8B96A8"></div><div style="font:600 11px 'Instrument Sans'">Music</div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#8B96A8"><div style="width:20px;height:20px;display:flex;flex-direction:column;justify-content:space-between;padding:2px 0;box-sizing:border-box"><div style="height:2.5px;background:#8B96A8;border-radius:2px"></div><div style="height:2.5px;background:#8B96A8;border-radius:2px"></div><div style="height:2.5px;background:#8B96A8;border-radius:2px"></div></div><div style="font:600 11px 'Instrument Sans'">History</div></div></div>
+</div></x-import></div>
+
+<div id="B2" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">B2 · Session live — RIDING, signal chips lit</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#FF5A1F;color:#0B0E14;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif;padding:14px 20px 20px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;opacity:.75">SNOWBOARDING · 1:42:10</div><div style="height:40px;padding:0 16px;border-radius:20px;background:rgba(11,14,20,.18);display:flex;align-items:center;font:700 14px 'Instrument Sans'">End</div></div>
+<div style="margin-top:28px;font:700 72px/1 'Instrument Sans';letter-spacing:-3px">RIDING</div>
+<div style="margin-top:12px;font:500 16px/1.4 'Instrument Sans';opacity:.85;text-wrap:pretty">Descending fast with heavy motion for 3 s. Pulse at 86% of max, so only your top tracks.</div>
+<div style="display:flex;gap:6px;margin-top:16px"><div style="height:30px;padding:0 10px;border-radius:15px;background:#0B0E14;color:#FF5A1F;display:flex;align-items:center;font:700 11px 'JetBrains Mono'">MOTION 3.1</div><div style="height:30px;padding:0 10px;border-radius:15px;background:#0B0E14;color:#FF5A1F;display:flex;align-items:center;font:700 11px 'JetBrains Mono'">ALT −2.4</div><div style="height:30px;padding:0 10px;border-radius:15px;background:#0B0E14;color:#FF5A1F;display:flex;align-items:center;font:700 11px 'JetBrains Mono'">SPEED 35</div><div style="height:30px;padding:0 10px;border-radius:15px;background:#0B0E14;color:#FF5A1F;display:flex;align-items:center;font:700 11px 'JetBrains Mono'">HR 164</div></div>
+<div style="margin-top:22px;display:flex;gap:5px"><div style="flex:1;height:10px;border-radius:5px;background:rgba(11,14,20,.22)"></div><div style="flex:1;height:10px;border-radius:5px;background:rgba(11,14,20,.22)"></div><div style="flex:1;height:10px;border-radius:5px;background:rgba(11,14,20,.22)"></div><div style="flex:1;height:10px;border-radius:5px;background:rgba(11,14,20,.22)"></div><div style="flex:1;height:10px;border-radius:5px;background:#0B0E14"></div></div>
+<div style="font:600 11px 'JetBrains Mono';letter-spacing:1.5px;opacity:.75;margin-top:8px">ENERGY 5 OF 5 · AUTO</div>
+<div style="flex:1"></div>
+<div style="border-radius:22px;background:#0B0E14;color:#F2F5F9;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:14px"><div style="width:56px;height:56px;border-radius:12px;background:repeating-linear-gradient(135deg,#1B2230 0 6px,#151B26 6px 12px);flex:none"></div><div style="flex:1;min-width:0"><div style="font:700 19px 'Instrument Sans';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Bleed It Out</div><div style="font:400 14px 'Instrument Sans';color:#8B96A8">Linkin Park · <span style="color:#FF5A1F">●</span> 5</div></div><div style="width:56px;height:56px;border-radius:50%;background:#151B26;display:flex;align-items:center;justify-content:center;font:700 18px 'Instrument Sans'">›|</div></div>
+<div style="height:3px;border-radius:2px;background:#232C3C;overflow:hidden"><div style="width:38%;height:100%;background:#FF5A1F"></div></div>
+<div style="display:flex;gap:8px"><div style="flex:1;height:64px;border-radius:16px;background:#151B26;color:#4FC3F7;display:flex;align-items:center;justify-content:center;font:700 15px 'Instrument Sans';letter-spacing:1px">CHILL</div><div style="flex:1;height:64px;border-radius:16px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:700 15px 'Instrument Sans';letter-spacing:1px">AUTO</div><div style="flex:1;height:64px;border-radius:16px;background:#151B26;color:#FF5A1F;display:flex;align-items:center;justify-content:center;font:700 15px 'Instrument Sans';letter-spacing:1px">HYPE</div></div>
+</div>
+</div></x-import></div>
+
+<div id="B3" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">B3 · Session live — LIFT, Spotify source, crossfading</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#4FC3F7;color:#0B0E14;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif;padding:14px 20px 20px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;opacity:.75">SNOWBOARDING · 1:49:33</div><div style="height:40px;padding:0 16px;border-radius:20px;background:rgba(11,14,20,.18);display:flex;align-items:center;font:700 14px 'Instrument Sans'">End</div></div>
+<div style="margin-top:28px;font:700 72px/1 'Instrument Sans';letter-spacing:-3px">LIFT</div>
+<div style="margin-top:12px;font:500 16px/1.4 'Instrument Sans';opacity:.85;text-wrap:pretty">Steady climb, barely moving, for 15 s. Easing into your chill playlist.</div>
+<div style="display:flex;gap:6px;margin-top:16px"><div style="height:30px;padding:0 10px;border-radius:15px;background:rgba(11,14,20,.18);display:flex;align-items:center;font:700 11px 'JetBrains Mono'">MOTION 0.3</div><div style="height:30px;padding:0 10px;border-radius:15px;background:#0B0E14;color:#4FC3F7;display:flex;align-items:center;font:700 11px 'JetBrains Mono'">ALT +1.8</div><div style="height:30px;padding:0 10px;border-radius:15px;background:#0B0E14;color:#4FC3F7;display:flex;align-items:center;font:700 11px 'JetBrains Mono'">SPEED 8</div><div style="height:30px;padding:0 10px;border-radius:15px;background:rgba(11,14,20,.18);display:flex;align-items:center;font:700 11px 'JetBrains Mono'">HR 121 ↓</div></div>
+<div style="margin-top:22px;display:flex;gap:5px"><div style="flex:1;height:10px;border-radius:5px;background:#0B0E14"></div><div style="flex:1;height:10px;border-radius:5px;background:#0B0E14"></div><div style="flex:1;height:10px;border-radius:5px;background:rgba(11,14,20,.22)"></div><div style="flex:1;height:10px;border-radius:5px;background:rgba(11,14,20,.22)"></div><div style="flex:1;height:10px;border-radius:5px;background:rgba(11,14,20,.22)"></div></div>
+<div style="font:600 11px 'JetBrains Mono';letter-spacing:1.5px;opacity:.75;margin-top:8px">ENERGY 1–2 · AUTO</div>
+<div style="flex:1"></div>
+<div style="border-radius:22px;background:#0B0E14;color:#F2F5F9;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:8px;font:600 11px 'JetBrains Mono';letter-spacing:1px;color:#8B96A8"><div style="width:10px;height:10px;border-radius:50%;background:#1DB954"></div>SPOTIFY · CHILL PLAYLIST · CROSSFADE 2 s</div>
+<div style="display:flex;align-items:center;gap:14px"><div style="width:56px;height:56px;border-radius:12px;background:repeating-linear-gradient(135deg,#1B2230 0 6px,#151B26 6px 12px);flex:none"></div><div style="flex:1;min-width:0"><div style="font:700 19px 'Instrument Sans';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Holocene</div><div style="font:400 14px 'Instrument Sans';color:#8B96A8">Bon Iver · Lift Laps</div></div><div style="width:56px;height:56px;border-radius:50%;background:#151B26;display:flex;align-items:center;justify-content:center;font:700 18px 'Instrument Sans'">›|</div></div>
+<div style="height:3px;border-radius:2px;background:#232C3C;overflow:hidden"><div style="width:6%;height:100%;background:#4FC3F7"></div></div>
+<div style="display:flex;gap:8px"><div style="flex:1;height:64px;border-radius:16px;background:#151B26;color:#4FC3F7;display:flex;align-items:center;justify-content:center;font:700 15px 'Instrument Sans';letter-spacing:1px">CHILL</div><div style="flex:1;height:64px;border-radius:16px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:700 15px 'Instrument Sans';letter-spacing:1px">AUTO</div><div style="flex:1;height:64px;border-radius:16px;background:#151B26;color:#FF5A1F;display:flex;align-items:center;justify-content:center;font:700 15px 'Instrument Sans';letter-spacing:1px">HYPE</div></div>
+</div>
+</div></x-import></div>
+
+<div id="B4" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">B4 · Session live — Strength, timer-driven SET</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#FF5A1F;color:#0B0E14;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif;padding:14px 20px 20px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;opacity:.75">STRENGTH · 30/90 · ROUND 4 OF 8</div><div style="height:40px;padding:0 16px;border-radius:20px;background:rgba(11,14,20,.18);display:flex;align-items:center;font:700 14px 'Instrument Sans'">End</div></div>
+<div style="margin-top:22px;font:700 72px/1 'Instrument Sans';letter-spacing:-3px">SET</div>
+<div style="margin-top:14px;font:700 96px/1 'JetBrains Mono';letter-spacing:-4px">0:18</div>
+<div style="margin-top:14px;height:12px;border-radius:6px;background:rgba(11,14,20,.22);overflow:hidden"><div style="width:40%;height:100%;background:#0B0E14"></div></div>
+<div style="margin-top:12px;font:500 16px/1.4 'Instrument Sans';opacity:.85">Next: REST 1:30 → chill tracks. Tap anywhere to end the set early.</div>
+<div style="flex:1"></div>
+<div style="border-radius:22px;background:#0B0E14;color:#F2F5F9;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:14px"><div style="width:56px;height:56px;border-radius:12px;background:repeating-linear-gradient(135deg,#1B2230 0 6px,#151B26 6px 12px);flex:none"></div><div style="flex:1;min-width:0"><div style="font:700 19px 'Instrument Sans';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Duality</div><div style="font:400 14px 'Instrument Sans';color:#8B96A8">Slipknot · <span style="color:#FF5A1F">●</span> 5</div></div><div style="width:56px;height:56px;border-radius:50%;background:#151B26;display:flex;align-items:center;justify-content:center;font:700 18px 'Instrument Sans'">›|</div></div>
+<div style="height:3px;border-radius:2px;background:#232C3C;overflow:hidden"><div style="width:61%;height:100%;background:#FF5A1F"></div></div>
+<div style="display:flex;gap:8px"><div style="flex:1;height:64px;border-radius:16px;background:#151B26;color:#F2F5F9;display:flex;align-items:center;justify-content:center;font:700 15px 'Instrument Sans';letter-spacing:1px">PAUSE</div><div style="flex:1;height:64px;border-radius:16px;background:#151B26;color:#F2F5F9;display:flex;align-items:center;justify-content:center;font:700 15px 'Instrument Sans';letter-spacing:1px">SKIP REST</div></div>
+</div>
+</div></x-import></div>
+
+<div id="B5" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">B5 · Recap — timeline vs HR/speed, top tracks, share</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="flex:1;overflow:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:600 15px 'Instrument Sans';color:#8B96A8">‹ History</div><div style="height:40px;padding:0 16px;border-radius:20px;background:#151B26;display:flex;align-items:center;font:700 14px 'Instrument Sans'">Share</div></div>
+<div><div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#FF5A1F">SNOWBOARDING · SAT 7 MAR</div><div style="font:700 34px/1.1 'Instrument Sans';letter-spacing:-.5px;margin-top:6px">3h 12m on the hill</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+<div style="border-radius:14px;background:#151B26;padding:12px"><div style="font:700 24px 'JetBrains Mono';color:#FF5A1F">1:58</div><div style="font:600 11px 'JetBrains Mono';color:#8B96A8;letter-spacing:1px">RIDING</div></div>
+<div style="border-radius:14px;background:#151B26;padding:12px"><div style="font:700 24px 'JetBrains Mono';color:#4FC3F7">0:51</div><div style="font:600 11px 'JetBrains Mono';color:#8B96A8;letter-spacing:1px">LIFT</div></div>
+<div style="border-radius:14px;background:#151B26;padding:12px"><div style="font:700 24px 'JetBrains Mono';color:#7E8AA0">0:23</div><div style="font:600 11px 'JetBrains Mono';color:#8B96A8;letter-spacing:1px">BREAK</div></div>
+</div>
+<div style="border-radius:18px;background:#151B26;border:1px solid #232C3C;padding:16px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;font:600 11px 'JetBrains Mono';letter-spacing:1px;color:#8B96A8"><span>MODE TIMELINE</span><span><span style="color:#F2F5F9">— HR</span> · <span style="color:#8B96A8">··· SPEED</span></span></div>
+<div style="position:relative;height:110px">
+<div style="position:absolute;inset:auto 0 0 0;height:100%;display:flex;gap:2px;opacity:.5"><div style="flex:5;background:#FF5A1F;border-radius:3px"></div><div style="flex:2;background:#4FC3F7;border-radius:3px"></div><div style="flex:6;background:#FF5A1F;border-radius:3px"></div><div style="flex:2;background:#4FC3F7;border-radius:3px"></div><div style="flex:3;background:#7E8AA0;border-radius:3px"></div><div style="flex:4;background:#FF5A1F;border-radius:3px"></div><div style="flex:2;background:#4FC3F7;border-radius:3px"></div></div>
+<svg viewBox="0 0 340 110" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><polyline fill="none" stroke="#F2F5F9" stroke-width="2.5" points="0,70 30,40 60,28 80,34 100,62 120,72 140,45 160,26 190,22 210,30 230,66 250,75 270,84 290,80 305,60 320,36 340,50"></polyline><polyline fill="none" stroke="#8B96A8" stroke-width="1.5" stroke-dasharray="3 4" points="0,95 30,50 60,38 80,44 100,88 120,92 140,55 160,36 190,30 210,42 230,92 250,96 270,98 290,97 305,68 320,42 340,84"></polyline></svg>
+</div>
+<div style="display:flex;justify-content:space-between;font:500 10px 'JetBrains Mono';color:#8B96A8"><span>09:40</span><span>10:30</span><span>11:20</span><span>12:10</span><span>12:52</span></div>
+</div>
+<div style="display:flex;gap:8px"><div style="flex:1;border-radius:14px;background:#151B26;padding:12px"><div style="font:600 11px 'JetBrains Mono';color:#8B96A8;letter-spacing:1px">AVG HR</div><div style="font:700 22px 'JetBrains Mono'">142 <span style="font-size:12px;color:#8B96A8">bpm</span></div></div><div style="flex:1;border-radius:14px;background:#151B26;padding:12px"><div style="font:600 11px 'JetBrains Mono';color:#8B96A8;letter-spacing:1px">TOP SPEED</div><div style="font:700 22px 'JetBrains Mono'">61 <span style="font-size:12px;color:#8B96A8">km/h</span></div></div><div style="flex:1;border-radius:14px;background:#151B26;padding:12px"><div style="font:600 11px 'JetBrains Mono';color:#8B96A8;letter-spacing:1px">SWITCHES</div><div style="font:700 22px 'JetBrains Mono'">23</div></div></div>
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8">TOP TRACKS</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;gap:12px;height:56px;padding:0 14px;border-radius:14px;background:#151B26"><div style="width:6px;height:28px;border-radius:3px;background:#FF5A1F"></div><div style="flex:1"><div style="font:600 15px 'Instrument Sans'">Bleed It Out</div><div style="font:400 12px 'Instrument Sans';color:#8B96A8">Linkin Park</div></div><div style="font:600 12px 'JetBrains Mono';color:#8B96A8">×3 · RIDING</div></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;padding:0 14px;border-radius:14px;background:#151B26"><div style="width:6px;height:28px;border-radius:3px;background:#FF5A1F"></div><div style="flex:1"><div style="font:600 15px 'Instrument Sans'">Killing In the Name</div><div style="font:400 12px 'Instrument Sans';color:#8B96A8">Rage Against the Machine</div></div><div style="font:600 12px 'JetBrains Mono';color:#8B96A8">×2 · RIDING</div></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;padding:0 14px;border-radius:14px;background:#151B26"><div style="width:6px;height:28px;border-radius:3px;background:#4FC3F7"></div><div style="flex:1"><div style="font:600 15px 'Instrument Sans'">Holocene</div><div style="font:400 12px 'Instrument Sans';color:#8B96A8">Bon Iver</div></div><div style="font:600 12px 'JetBrains Mono';color:#8B96A8">×2 · LIFT</div></div>
+</div>
+</div></div></x-import></div>
+
+<div id="B6" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">B6 · Share card (1080×1350 export, shown scaled)</div>
+<div style="width:412px;height:515px;border-radius:18px;background:#0B0E14;color:#F2F5F9;padding:32px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;font-family:'Instrument Sans',sans-serif;box-shadow:0 30px 80px rgba(0,0,0,.25)">
+<div style="display:flex;justify-content:space-between;align-items:center"><div style="font:700 12px 'JetBrains Mono';letter-spacing:2px;color:#FF5A1F">ACTIPLAYER</div><div style="font:600 12px 'JetBrains Mono';color:#8B96A8">SAT 7 MAR</div></div>
+<div><div style="font:700 44px/1 'Instrument Sans';letter-spacing:-1.5px">3h 12m</div><div style="font:500 16px 'Instrument Sans';color:#8B96A8;margin-top:6px">Snowboarding · Les Arcs</div></div>
+<div style="display:flex;gap:3px;height:56px"><div style="flex:5;background:#FF5A1F;border-radius:4px"></div><div style="flex:2;background:#4FC3F7;border-radius:4px"></div><div style="flex:6;background:#FF5A1F;border-radius:4px"></div><div style="flex:2;background:#4FC3F7;border-radius:4px"></div><div style="flex:3;background:#7E8AA0;border-radius:4px"></div><div style="flex:4;background:#FF5A1F;border-radius:4px"></div><div style="flex:2;background:#4FC3F7;border-radius:4px"></div></div>
+<div style="display:flex;gap:24px"><div><div style="font:700 26px 'JetBrains Mono';color:#FF5A1F">1:58</div><div style="font:600 11px 'JetBrains Mono';color:#8B96A8;letter-spacing:1px">RIDING</div></div><div><div style="font:700 26px 'JetBrains Mono'">142</div><div style="font:600 11px 'JetBrains Mono';color:#8B96A8;letter-spacing:1px">AVG BPM</div></div><div><div style="font:700 26px 'JetBrains Mono'">61</div><div style="font:600 11px 'JetBrains Mono';color:#8B96A8;letter-spacing:1px">KM/H</div></div></div>
+<div style="border-top:1px solid #232C3C;padding-top:16px"><div style="font:600 11px 'JetBrains Mono';color:#8B96A8;letter-spacing:1px">SONG OF THE DAY</div><div style="font:700 20px 'Instrument Sans';margin-top:4px">Bleed It Out — Linkin Park</div></div>
+</div></div>
+
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#444">C · MUSIC TAB — BUILDING THE POOL WITHOUT RATING 179 TRACKS BY HAND</div>
+<div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+
+<div id="C1" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">C1 · Music overview — pools per energy</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="flex:1;overflow:auto;padding:16px 20px 20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:700 26px 'Instrument Sans';letter-spacing:-.5px">Music</div><div style="height:40px;padding:0 14px;border-radius:20px;background:#151B26;display:flex;align-items:center;font:700 14px 'Instrument Sans'">+ Add</div></div>
+<div style="font:400 14px/1.45 'Instrument Sans';color:#8B96A8">Three energy levels. Fill each from local folders or a Spotify playlist. The engine only ever picks from these.</div>
+<div style="border-radius:18px;background:#151B26;border:1px solid #232C3C;overflow:hidden">
+<div style="display:flex;align-items:center;gap:14px;padding:16px;border-left:6px solid #FF5A1F"><div style="flex:1"><div style="font:700 18px 'Instrument Sans'">Hype</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8;margin-top:2px">RIDING · EFFORT · PUSH · SET</div></div><div style="text-align:right"><div style="font:700 16px 'JetBrains Mono'">61</div><div style="font:500 11px 'JetBrains Mono';color:#8B96A8">TRACKS</div></div></div>
+<div style="display:flex;gap:8px;padding:0 16px 16px 22px;flex-wrap:wrap"><div style="height:34px;padding:0 12px;border-radius:17px;background:#1B2230;display:flex;align-items:center;gap:8px;font:500 13px 'Instrument Sans'"><div style="width:8px;height:8px;border-radius:2px;background:#8B96A8"></div>Music/Metal · 38</div><div style="height:34px;padding:0 12px;border-radius:17px;background:#1B2230;display:flex;align-items:center;gap:8px;font:500 13px 'Instrument Sans'"><div style="width:8px;height:8px;border-radius:50%;background:#1DB954"></div>Send It · 23</div></div>
+</div>
+<div style="border-radius:18px;background:#151B26;border:1px solid #232C3C;overflow:hidden">
+<div style="display:flex;align-items:center;gap:14px;padding:16px;border-left:6px solid #7E8AA0"><div style="flex:1"><div style="font:700 18px 'Instrument Sans'">Mid</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8;margin-top:2px">BREAK · CRUISE · EASY</div></div><div style="text-align:right"><div style="font:700 16px 'JetBrains Mono'">48</div><div style="font:500 11px 'JetBrains Mono';color:#8B96A8">TRACKS</div></div></div>
+<div style="display:flex;gap:8px;padding:0 16px 16px 22px;flex-wrap:wrap"><div style="height:34px;padding:0 12px;border-radius:17px;background:#1B2230;display:flex;align-items:center;gap:8px;font:500 13px 'Instrument Sans'"><div style="width:8px;height:8px;border-radius:2px;background:#8B96A8"></div>Music/Indie · 48</div></div>
+</div>
+<div style="border-radius:18px;background:#151B26;border:1px solid #232C3C;overflow:hidden">
+<div style="display:flex;align-items:center;gap:14px;padding:16px;border-left:6px solid #4FC3F7"><div style="flex:1"><div style="font:700 18px 'Instrument Sans'">Chill</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8;margin-top:2px">LIFT · REST · WALK</div></div><div style="text-align:right"><div style="font:700 16px 'JetBrains Mono'">34</div><div style="font:500 11px 'JetBrains Mono';color:#8B96A8">TRACKS</div></div></div>
+<div style="display:flex;gap:8px;padding:0 16px 16px 22px;flex-wrap:wrap"><div style="height:34px;padding:0 12px;border-radius:17px;background:#1B2230;display:flex;align-items:center;gap:8px;font:500 13px 'Instrument Sans'"><div style="width:8px;height:8px;border-radius:50%;background:#1DB954"></div>Lift Laps · 34</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;background:#1B2230;border:1px dashed #8B96A8"><div style="flex:1"><div style="font:600 15px 'Instrument Sans'">36 unsorted tracks</div><div style="font:400 13px 'Instrument Sans';color:#8B96A8">Guessed from tempo. Confirm in 2 min.</div></div><div style="height:40px;padding:0 14px;border-radius:20px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;font:700 14px 'Instrument Sans'">Quick sort</div></div>
+</div>
+<div style="height:72px;border-top:1px solid #232C3C;display:flex;background:#0B0E14"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#8B96A8"><div style="width:20px;height:20px;border-radius:6px;border:2.5px solid #8B96A8"></div><div style="font:600 11px 'Instrument Sans'">Home</div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#F2F5F9"><div style="width:20px;height:20px;border-radius:50%;border:2.5px solid #F2F5F9"></div><div style="font:600 11px 'Instrument Sans'">Music</div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#8B96A8"><div style="width:20px;height:20px;display:flex;flex-direction:column;justify-content:space-between;padding:2px 0;box-sizing:border-box"><div style="height:2.5px;background:#8B96A8;border-radius:2px"></div><div style="height:2.5px;background:#8B96A8;border-radius:2px"></div><div style="height:2.5px;background:#8B96A8;border-radius:2px"></div></div><div style="font:600 11px 'Instrument Sans'">History</div></div></div>
+</div></x-import></div>
+
+<div id="C2" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">C2 · Add to Hype — folders, albums, playlists</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="padding:16px 20px 0;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:600 15px 'Instrument Sans';color:#8B96A8">‹ Music</div><div style="font:600 12px 'JetBrains Mono';letter-spacing:1px;color:#FF5A1F">ADDING TO HYPE</div></div>
+<div style="height:48px;border-radius:14px;background:#151B26;display:flex;align-items:center;padding:0 16px;font:400 15px 'Instrument Sans';color:#8B96A8">Search folders, albums, artists</div>
+<div style="display:flex;gap:8px"><div style="height:36px;padding:0 14px;border-radius:18px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;font:600 13px 'Instrument Sans'">Folders</div><div style="height:36px;padding:0 14px;border-radius:18px;background:#151B26;display:flex;align-items:center;font:600 13px 'Instrument Sans';color:#8B96A8">Albums</div><div style="height:36px;padding:0 14px;border-radius:18px;background:#151B26;display:flex;align-items:center;font:600 13px 'Instrument Sans';color:#8B96A8">Playlists</div><div style="height:36px;padding:0 14px;border-radius:18px;background:#151B26;display:flex;align-items:center;gap:6px;font:600 13px 'Instrument Sans';color:#8B96A8"><div style="width:8px;height:8px;border-radius:50%;background:#1DB954"></div>Spotify</div></div>
+</div>
+<div style="flex:1;overflow:auto;padding:8px 20px 0;display:flex;flex-direction:column;gap:6px">
+<sc-for list="{{ folders }}" as="f" hint-placeholder-count="7">
+<div style="display:flex;align-items:center;gap:14px;height:64px;padding:0 14px;border-radius:14px;background:{{ f.bg }};border:1px solid {{ f.border }}"><div style="width:24px;height:24px;border-radius:6px;border:2px solid {{ f.check }};background:{{ f.fill }};display:flex;align-items:center;justify-content:center;box-sizing:border-box"><div style="width:10px;height:5px;border-left:2.5px solid #0B0E14;border-bottom:2.5px solid #0B0E14;transform:translateY(-2px) rotate(-45deg);opacity:{{ f.tick }}"></div></div><div style="flex:1;min-width:0"><div style="font:600 16px 'Instrument Sans';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8">{{ f.meta }}</div></div><div style="font:600 12px 'JetBrains Mono';color:{{ f.tagColor }}">{{ f.tag }}</div></div>
+</sc-for>
+</div>
+<div style="padding:12px 20px 20px"><div style="height:64px;border-radius:16px;background:#FF5A1F;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:700 18px 'Instrument Sans'">Add 61 tracks to Hype</div></div>
+</div></x-import></div>
+
+<div id="C3" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">C3 · Quick sort — swipe with 30 s preview</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif;padding:16px 20px 20px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:600 15px 'Instrument Sans';color:#8B96A8">✕ Done</div><div style="font:600 12px 'JetBrains Mono';letter-spacing:1px;color:#8B96A8">14 OF 36 SORTED</div></div>
+<div style="height:4px;border-radius:2px;background:#232C3C;margin-top:8px;overflow:hidden"><div style="width:39%;height:100%;background:#F2F5F9"></div></div>
+<div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative;margin:18px 0">
+<div style="position:absolute;width:296px;height:380px;border-radius:26px;background:#151B26;transform:translateY(18px) scale(.94);opacity:.5"></div>
+<div style="position:relative;width:312px;height:400px;border-radius:26px;background:#1B2230;border:1px solid #232C3C;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.5)">
+<div style="flex:1;border-radius:16px;background:repeating-linear-gradient(135deg,#232C3C 0 8px,#1B2230 8px 16px);display:flex;align-items:center;justify-content:center;font:500 11px 'JetBrains Mono';color:#8B96A8">album art</div>
+<div style="margin-top:16px;font:700 22px 'Instrument Sans';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Midnight City</div>
+<div style="font:400 15px 'Instrument Sans';color:#8B96A8">M83 · 4:03</div>
+<div style="margin-top:12px;display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:50%;background:#F2F5F9;display:flex;align-items:center;justify-content:center"><div style="width:0;height:0;border-left:11px solid #0B0E14;border-top:7px solid transparent;border-bottom:7px solid transparent;margin-left:3px"></div></div><div style="flex:1;height:3px;background:#232C3C;border-radius:2px;overflow:hidden"><div style="width:45%;height:100%;background:#F2F5F9"></div></div><div style="font:500 11px 'JetBrains Mono';color:#8B96A8">1:12 · DROP</div></div>
+<div style="margin-top:12px;display:flex;align-items:center;gap:8px;font:500 12px 'JetBrains Mono';color:#8B96A8"><div style="height:24px;padding:0 8px;border-radius:12px;background:#151B26;display:flex;align-items:center;color:#7E8AA0">GUESS: MID</div>105 BPM · SYNTHPOP</div>
+</div>
+</div>
+<div style="display:flex;gap:8px"><div style="flex:1;height:72px;border-radius:18px;background:#151B26;border:2px solid #4FC3F7;color:#4FC3F7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><div style="font:700 15px 'Instrument Sans'">‹ CHILL</div><div style="font:500 10px 'JetBrains Mono'">SWIPE LEFT</div></div><div style="flex:1;height:72px;border-radius:18px;background:#151B26;border:2px solid #7E8AA0;color:#F2F5F9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><div style="font:700 15px 'Instrument Sans'">MID</div><div style="font:500 10px 'JetBrains Mono'">SWIPE UP</div></div><div style="flex:1;height:72px;border-radius:18px;background:#151B26;border:2px solid #FF5A1F;color:#FF5A1F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><div style="font:700 15px 'Instrument Sans'">HYPE ›</div><div style="font:500 10px 'JetBrains Mono'">SWIPE RIGHT</div></div></div>
+<div style="height:44px;display:flex;align-items:center;justify-content:center;font:500 14px 'Instrument Sans';color:#8B96A8">Swipe down to exclude (podcasts, voice notes)</div>
+</div></x-import></div>
+
+<div id="C4" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">C4 · Bulk edit — select many, one energy</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="padding:16px 20px 0;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:600 15px 'Instrument Sans';color:#8B96A8">✕</div><div style="font:700 17px 'Instrument Sans'">7 selected</div><div style="font:600 15px 'Instrument Sans';color:#4FC3F7">All</div></div>
+<div style="display:flex;gap:8px"><div style="height:36px;padding:0 14px;border-radius:18px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;font:600 13px 'Instrument Sans'">Hype · 61</div><div style="height:36px;padding:0 14px;border-radius:18px;background:#151B26;display:flex;align-items:center;font:600 13px 'Instrument Sans';color:#8B96A8">Mid · 48</div><div style="height:36px;padding:0 14px;border-radius:18px;background:#151B26;display:flex;align-items:center;font:600 13px 'Instrument Sans';color:#8B96A8">Chill · 34</div><div style="height:36px;padding:0 14px;border-radius:18px;background:#151B26;display:flex;align-items:center;font:600 13px 'Instrument Sans';color:#8B96A8">Excluded · 22</div></div>
+</div>
+<div style="flex:1;overflow:auto;padding:8px 20px 0;display:flex;flex-direction:column">
+<sc-for list="{{ bulkRows }}" as="t" hint-placeholder-count="9">
+<div style="display:flex;align-items:center;gap:14px;height:60px;border-bottom:1px solid #151B26"><div style="width:24px;height:24px;border-radius:50%;border:2px solid {{ t.check }};background:{{ t.fill }};box-sizing:border-box"></div><div style="flex:1;min-width:0"><div style="font:600 15px 'Instrument Sans';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.title }}</div><div style="font:400 12px 'Instrument Sans';color:#8B96A8">{{ t.sub }}</div></div><div style="width:8px;height:8px;border-radius:50%;background:#FF5A1F"></div></div>
+</sc-for>
+</div>
+<div style="padding:12px 20px 20px;display:flex;flex-direction:column;gap:8px"><div style="font:600 11px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8">MOVE 7 TO</div><div style="display:flex;gap:8px"><div style="flex:1;height:56px;border-radius:14px;background:#151B26;border:2px solid #4FC3F7;color:#4FC3F7;display:flex;align-items:center;justify-content:center;font:700 14px 'Instrument Sans'">CHILL</div><div style="flex:1;height:56px;border-radius:14px;background:#151B26;border:2px solid #7E8AA0;display:flex;align-items:center;justify-content:center;font:700 14px 'Instrument Sans'">MID</div><div style="flex:1;height:56px;border-radius:14px;background:#151B26;border:2px solid #232C3C;color:#8B96A8;display:flex;align-items:center;justify-content:center;font:700 14px 'Instrument Sans'">EXCLUDE</div></div></div>
+</div></x-import></div>
+
+<div id="C5" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">C5 · Spotify — playlist per energy</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="flex:1;overflow:auto;padding:16px 20px 20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:600 15px 'Instrument Sans';color:#8B96A8">‹ Music</div><div style="display:flex;align-items:center;gap:8px;font:600 12px 'JetBrains Mono';color:#6FDB8F"><div style="width:8px;height:8px;border-radius:50%;background:#6FDB8F"></div>CONNECTED · PREMIUM</div></div>
+<div style="display:flex;align-items:center;gap:12px"><div style="width:32px;height:32px;border-radius:50%;background:#1DB954"></div><div style="font:700 26px 'Instrument Sans';letter-spacing:-.5px">Spotify</div></div>
+<div style="font:400 14px/1.45 'Instrument Sans';color:#8B96A8;text-wrap:pretty">ActiPlayer controls the Spotify app on this phone: it starts the right playlist when your mode changes and keeps shuffle on. Spotify plays the audio.</div>
+<div style="border-radius:18px;background:#151B26;border:1px solid #232C3C;padding:16px;display:flex;align-items:center;gap:14px;border-left:6px solid #FF5A1F"><div style="width:52px;height:52px;border-radius:10px;background:repeating-linear-gradient(135deg,#232C3C 0 6px,#1B2230 6px 12px);flex:none"></div><div style="flex:1;min-width:0"><div style="font:600 11px 'JetBrains Mono';letter-spacing:1.5px;color:#FF5A1F">HYPE</div><div style="font:700 17px 'Instrument Sans';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Send It</div><div style="font:400 13px 'Instrument Sans';color:#8B96A8">23 tracks · by you</div></div><div style="font:600 13px 'Instrument Sans';color:#4FC3F7">Change</div></div>
+<div style="border-radius:18px;background:#151B26;border:1px solid #232C3C;padding:16px;display:flex;align-items:center;gap:14px;border-left:6px solid #7E8AA0"><div style="width:52px;height:52px;border-radius:10px;border:2px dashed #232C3C;box-sizing:border-box;flex:none"></div><div style="flex:1;min-width:0"><div style="font:600 11px 'JetBrains Mono';letter-spacing:1.5px;color:#7E8AA0">MID</div><div style="font:700 17px 'Instrument Sans';color:#8B96A8">No playlist</div><div style="font:400 13px 'Instrument Sans';color:#8B96A8">Uses your local Mid pool</div></div><div style="height:40px;padding:0 14px;border-radius:20px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;font:700 14px 'Instrument Sans'">Pick</div></div>
+<div style="border-radius:18px;background:#151B26;border:1px solid #232C3C;padding:16px;display:flex;align-items:center;gap:14px;border-left:6px solid #4FC3F7"><div style="width:52px;height:52px;border-radius:10px;background:repeating-linear-gradient(135deg,#232C3C 0 6px,#1B2230 6px 12px);flex:none"></div><div style="flex:1;min-width:0"><div style="font:600 11px 'JetBrains Mono';letter-spacing:1.5px;color:#4FC3F7">CHILL</div><div style="font:700 17px 'Instrument Sans';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Lift Laps</div><div style="font:400 13px 'Instrument Sans';color:#8B96A8">34 tracks · by you</div></div><div style="font:600 13px 'Instrument Sans';color:#4FC3F7">Change</div></div>
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8;margin-top:6px">WHEN SPOTIFY CAN'T PLAY</div>
+<div style="border-radius:16px;background:#151B26;border:1px solid #232C3C;padding:14px 16px;display:flex;align-items:center;gap:14px"><div style="flex:1"><div style="font:600 15px 'Instrument Sans'">Fall back to local pools</div><div style="font:400 13px/1.4 'Instrument Sans';color:#8B96A8">No signal, app closed, or Free account. Switches back when Spotify responds.</div></div><div style="width:52px;height:32px;border-radius:16px;background:#6FDB8F;position:relative"><div style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:#0B0E14"></div></div></div>
+<div style="border-radius:16px;background:#151B26;border:1px solid #232C3C;padding:14px 16px;display:flex;align-items:center;gap:14px"><div style="flex:1"><div style="font:600 15px 'Instrument Sans'">Rate Spotify tracks 1–5 too</div><div style="font:400 13px/1.4 'Instrument Sans';color:#8B96A8">Import playlists into Quick sort for finer bands.</div></div><div style="width:52px;height:32px;border-radius:16px;background:#232C3C;position:relative"><div style="position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#8B96A8"></div></div></div>
+</div></div></x-import></div>
+
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#444">D · HISTORY · PRO · SETTINGS · TIMER SETUP</div>
+<div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+
+<div id="D1" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">D1 · History</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="flex:1;overflow:auto;padding:16px 20px 20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:700 26px 'Instrument Sans';letter-spacing:-.5px">History</div><div style="font:600 12px 'JetBrains Mono';color:#8B96A8">MARCH · 6 SESSIONS</div></div>
+<sc-for list="{{ sessions }}" as="s" hint-placeholder-count="5">
+<div style="border-radius:18px;background:#151B26;border:1px solid #232C3C;padding:16px;display:flex;flex-direction:column;gap:12px"><div style="display:flex;align-items:center;gap:12px"><div style="width:12px;height:12px;border-radius:50%;background:{{ s.color }}"></div><div style="flex:1"><div style="font:700 17px 'Instrument Sans'">{{ s.title }}</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8">{{ s.meta }}</div></div><div style="font:700 18px 'JetBrains Mono'">{{ s.dur }}</div></div><div style="display:flex;gap:2px;height:10px"><sc-for list="{{ s.segs }}" as="g" hint-placeholder-count="5"><div style="flex:{{ g.w }};background:{{ g.c }};border-radius:2px"></div></sc-for></div></div>
+</sc-for>
+</div>
+<div style="height:72px;border-top:1px solid #232C3C;display:flex;background:#0B0E14"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#8B96A8"><div style="width:20px;height:20px;border-radius:6px;border:2.5px solid #8B96A8"></div><div style="font:600 11px 'Instrument Sans'">Home</div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#8B96A8"><div style="width:20px;height:20px;border-radius:50%;border:2.5px solid #8B96A8"></div><div style="font:600 11px 'Instrument Sans'">Music</div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#F2F5F9"><div style="width:20px;height:20px;display:flex;flex-direction:column;justify-content:space-between;padding:2px 0;box-sizing:border-box"><div style="height:2.5px;background:#F2F5F9;border-radius:2px"></div><div style="height:2.5px;background:#F2F5F9;border-radius:2px"></div><div style="height:2.5px;background:#F2F5F9;border-radius:2px"></div></div><div style="font:600 11px 'Instrument Sans'">History</div></div></div>
+</div></x-import></div>
+
+<div id="D2" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">D2 · Pro — 7-day trial sheet</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif;padding:0 20px 20px">
+<div style="height:120px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px"><div style="width:44px;height:5px;border-radius:3px;background:#232C3C"></div></div>
+<div style="flex:1;border-radius:26px;background:#151B26;border:1px solid #232C3C;padding:24px;display:flex;flex-direction:column;gap:18px">
+<div style="height:28px;padding:0 12px;border-radius:14px;background:#FF5A1F;color:#0B0E14;display:inline-flex;align-items:center;align-self:flex-start;font:700 12px 'JetBrains Mono';letter-spacing:1px">ACTIPLAYER PRO</div>
+<div style="font:700 32px/1.1 'Instrument Sans';letter-spacing:-.5px">Every activity. Your Spotify. Free for 7 days.</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:12px"><div style="width:10px;height:10px;border-radius:50%;background:#FF5A1F"></div><div style="font:500 16px 'Instrument Sans'">Spotify playlists per energy level</div></div>
+<div style="display:flex;align-items:center;gap:12px"><div style="width:10px;height:10px;border-radius:50%;background:#FF5A1F"></div><div style="font:500 16px 'Instrument Sans'">Cycling, Running, Strength, HIIT profiles</div></div>
+<div style="display:flex;align-items:center;gap:12px"><div style="width:10px;height:10px;border-radius:50%;background:#FF5A1F"></div><div style="font:500 16px 'Instrument Sans'">Jump to the drop when you go hard <span style="font:600 11px 'JetBrains Mono';color:#8B96A8">SOON</span></div></div>
+<div style="display:flex;align-items:center;gap:12px"><div style="width:10px;height:10px;border-radius:50%;background:#7E8AA0"></div><div style="font:500 16px 'Instrument Sans';color:#8B96A8">Free keeps: Ski/Snowboard, Generic, local music, history</div></div>
+</div>
+<div style="flex:1"></div>
+<div style="display:flex;gap:8px"><div style="flex:1;border-radius:16px;background:#1B2230;border:2px solid #F2F5F9;padding:14px;display:flex;flex-direction:column;gap:2px"><div style="font:600 11px 'JetBrains Mono';color:#8B96A8">YEARLY</div><div style="font:700 22px 'Instrument Sans'">€19.99</div><div style="font:400 12px 'Instrument Sans';color:#6FDB8F">€1.67 / mo · save 44%</div></div><div style="flex:1;border-radius:16px;background:#1B2230;border:1px solid #232C3C;padding:14px;display:flex;flex-direction:column;gap:2px"><div style="font:600 11px 'JetBrains Mono';color:#8B96A8">MONTHLY</div><div style="font:700 22px 'Instrument Sans'">€2.99</div><div style="font:400 12px 'Instrument Sans';color:#8B96A8">cancel anytime</div></div></div>
+<div style="height:64px;border-radius:16px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:700 18px 'Instrument Sans'">Start free trial</div>
+<div style="font:400 12px/1.4 'Instrument Sans';color:#8B96A8;text-align:center">No charge until day 8. Reminder on day 5. Cancel in Play Store.</div>
+</div>
+</div></x-import></div>
+
+<div id="D3" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">D3 · Settings</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif">
+<div style="flex:1;overflow:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:600 15px 'Instrument Sans';color:#8B96A8">‹ Home</div><div style="font:700 20px 'Instrument Sans'">Settings</div><div style="width:44px"></div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="font:600 11px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8">YOU</div>
+<div style="border-radius:16px;background:#151B26;border:1px solid #232C3C;overflow:hidden">
+<div style="display:flex;align-items:center;height:60px;padding:0 16px;border-bottom:1px solid #232C3C"><div style="flex:1;font:500 16px 'Instrument Sans'">Max heart rate</div><div style="font:600 15px 'JetBrains Mono'">188</div></div>
+<div style="display:flex;align-items:center;height:60px;padding:0 16px;border-bottom:1px solid #232C3C"><div style="flex:1;font:500 16px 'Instrument Sans'">Heart-rate monitor</div><div style="font:500 15px 'Instrument Sans';color:#8B96A8">Instinct E ›</div></div>
+<div style="display:flex;align-items:center;height:60px;padding:0 16px"><div style="flex:1;font:500 16px 'Instrument Sans'">Units</div><div style="font:500 15px 'Instrument Sans';color:#8B96A8">Metric ›</div></div>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="font:600 11px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8">PLAYBACK</div>
+<div style="border-radius:16px;background:#151B26;border:1px solid #232C3C;overflow:hidden">
+<div style="display:flex;align-items:center;height:60px;padding:0 16px;border-bottom:1px solid #232C3C"><div style="flex:1"><div style="font:500 16px 'Instrument Sans'">Crossfade</div><div style="font:400 12px 'Instrument Sans';color:#8B96A8">Instant cut when going up, gentle when easing off</div></div><div style="font:600 15px 'JetBrains Mono'">2 s</div></div>
+<div style="display:flex;align-items:center;height:60px;padding:0 16px;border-bottom:1px solid #232C3C"><div style="flex:1;font:500 16px 'Instrument Sans'">Spotify fallback to local</div><div style="width:52px;height:32px;border-radius:16px;background:#6FDB8F;position:relative"><div style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:#0B0E14"></div></div></div>
+<div style="display:flex;align-items:center;height:60px;padding:0 16px"><div style="flex:1;font:500 16px 'Instrument Sans'">Pause when headphones unplug</div><div style="width:52px;height:32px;border-radius:16px;background:#6FDB8F;position:relative"><div style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:#0B0E14"></div></div></div>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="font:600 11px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8">DETECTION</div>
+<div style="border-radius:16px;background:#151B26;border:1px solid #232C3C;overflow:hidden">
+<div style="display:flex;align-items:center;height:60px;padding:0 16px;border-bottom:1px solid #232C3C"><div style="flex:1"><div style="font:500 16px 'Instrument Sans'">Switch sensitivity</div><div style="font:400 12px 'Instrument Sans';color:#8B96A8">How sure before easing down</div></div><div style="display:flex;gap:4px"><div style="height:32px;padding:0 10px;border-radius:8px;background:#232C3C;display:flex;align-items:center;font:600 12px 'Instrument Sans';color:#8B96A8">Quick</div><div style="height:32px;padding:0 10px;border-radius:8px;background:#F2F5F9;color:#0B0E14;display:flex;align-items:center;font:600 12px 'Instrument Sans'">Balanced</div><div style="height:32px;padding:0 10px;border-radius:8px;background:#232C3C;display:flex;align-items:center;font:600 12px 'Instrument Sans';color:#8B96A8">Sure</div></div></div>
+<div style="display:flex;align-items:center;height:60px;padding:0 16px"><div style="flex:1;font:500 16px 'Instrument Sans'">Show live signals in session</div><div style="width:52px;height:32px;border-radius:16px;background:#6FDB8F;position:relative"><div style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:#0B0E14"></div></div></div>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="font:600 11px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8">ACCOUNT</div>
+<div style="border-radius:16px;background:#151B26;border:1px solid #232C3C;overflow:hidden">
+<div style="display:flex;align-items:center;height:60px;padding:0 16px;border-bottom:1px solid #232C3C"><div style="flex:1;font:500 16px 'Instrument Sans'">ActiPlayer Pro</div><div style="font:600 12px 'JetBrains Mono';color:#FF5A1F">TRIAL · 5 DAYS LEFT</div></div>
+<div style="display:flex;align-items:center;height:60px;padding:0 16px;border-bottom:1px solid #232C3C"><div style="flex:1;font:500 16px 'Instrument Sans'">Export sessions (JSON)</div><div style="font:500 15px 'Instrument Sans';color:#8B96A8">›</div></div>
+<div style="display:flex;align-items:center;height:60px;padding:0 16px"><div style="flex:1;font:500 16px 'Instrument Sans'">Privacy · nothing leaves the phone</div><div style="font:500 15px 'Instrument Sans';color:#8B96A8">›</div></div>
+</div></div>
+</div></div></x-import></div>
+
+<div id="D4" style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px 'Instrument Sans';color:#444">D4 · Strength / HIIT — timer presets before Start</div>
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{ true }}" hint-size="412px,892px">
+<div style="height:100%;background:#0B0E14;color:#F2F5F9;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Instrument Sans',sans-serif;padding:16px 20px 20px">
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px"><div style="font:600 15px 'Instrument Sans';color:#8B96A8">‹ Home</div><div style="font:600 12px 'JetBrains Mono';letter-spacing:1px;color:#FF5A1F">STRENGTH</div></div>
+<div style="font:700 30px/1.1 'Instrument Sans';letter-spacing:-.5px;margin-top:12px">Work / rest clock</div>
+<div style="font:400 15px/1.45 'Instrument Sans';color:#8B96A8;margin-top:8px">Indoors there's no GPS or altitude, so the clock drives the music: work = Hype, rest = Chill. Tap the screen to end a set early.</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px">
+<div style="border-radius:16px;background:#151B26;border:2px solid #F2F5F9;padding:14px;display:flex;flex-direction:column;gap:4px"><div style="font:700 17px 'Instrument Sans'">Strength</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8">30 s · 90 s · 8 ROUNDS</div></div>
+<div style="border-radius:16px;background:#151B26;border:1px solid #232C3C;padding:14px;display:flex;flex-direction:column;gap:4px"><div style="font:700 17px 'Instrument Sans'">Tabata</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8">20 s · 10 s · 8 ROUNDS</div></div>
+<div style="border-radius:16px;background:#151B26;border:1px solid #232C3C;padding:14px;display:flex;flex-direction:column;gap:4px"><div style="font:700 17px 'Instrument Sans'">EMOM</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8">EVERY 60 s · 12 ROUNDS</div></div>
+<div style="border-radius:16px;background:#151B26;border:1px solid #232C3C;padding:14px;display:flex;flex-direction:column;gap:4px"><div style="font:700 17px 'Instrument Sans'">30 / 30</div><div style="font:500 12px 'JetBrains Mono';color:#8B96A8">30 s · 30 s · 10 ROUNDS</div></div>
+</div>
+<div style="margin-top:14px;border-radius:18px;background:#151B26;border:1px solid #232C3C;padding:16px;display:flex;flex-direction:column;gap:14px">
+<div style="font:600 11px 'JetBrains Mono';letter-spacing:1.5px;color:#8B96A8">CUSTOM</div>
+<div style="display:flex;align-items:center"><div style="flex:1;font:500 16px 'Instrument Sans'">Work</div><div style="display:flex;align-items:center;gap:8px"><div style="width:44px;height:44px;border-radius:12px;background:#1B2230;display:flex;align-items:center;justify-content:center;font:700 20px 'Instrument Sans'">−</div><div style="width:64px;text-align:center;font:700 22px 'JetBrains Mono';color:#FF5A1F">0:30</div><div style="width:44px;height:44px;border-radius:12px;background:#1B2230;display:flex;align-items:center;justify-content:center;font:700 20px 'Instrument Sans'">+</div></div></div>
+<div style="display:flex;align-items:center"><div style="flex:1;font:500 16px 'Instrument Sans'">Rest</div><div style="display:flex;align-items:center;gap:8px"><div style="width:44px;height:44px;border-radius:12px;background:#1B2230;display:flex;align-items:center;justify-content:center;font:700 20px 'Instrument Sans'">−</div><div style="width:64px;text-align:center;font:700 22px 'JetBrains Mono';color:#4FC3F7">1:30</div><div style="width:44px;height:44px;border-radius:12px;background:#1B2230;display:flex;align-items:center;justify-content:center;font:700 20px 'Instrument Sans'">+</div></div></div>
+<div style="display:flex;align-items:center"><div style="flex:1;font:500 16px 'Instrument Sans'">Rounds</div><div style="display:flex;align-items:center;gap:8px"><div style="width:44px;height:44px;border-radius:12px;background:#1B2230;display:flex;align-items:center;justify-content:center;font:700 20px 'Instrument Sans'">−</div><div style="width:64px;text-align:center;font:700 22px 'JetBrains Mono'">8</div><div style="width:44px;height:44px;border-radius:12px;background:#1B2230;display:flex;align-items:center;justify-content:center;font:700 20px 'Instrument Sans'">+</div></div></div>
+</div>
+<div style="flex:1"></div>
+<div style="height:64px;border-radius:16px;background:#FF5A1F;color:#0B0E14;display:flex;align-items:center;justify-content:center;font:700 18px 'Instrument Sans'">Start · 16 min</div>
+</div></x-import></div>
+
+</div></div>
+
+<div style="max-width:820px;font:400 13px/1.6 'Instrument Sans';color:#555">
+<div style="font:600 12px 'JetBrains Mono';letter-spacing:1.5px;color:#444;margin-bottom:8px">NEXT STEPS</div>
+Pick the screens to push further (I'd start with B2 live session and C3 quick sort). Then: empty/error states (no music, Spotify not installed, BLE lost), the media notification, a clickable prototype of setup → session → recap, and a light pass on the share card. Try: "make B2 read better in sunlight", "swap C1's three pools for five bands", "prototype the wizard".
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const F = (name, meta, tag, sel, tagColor) => ({
+      name, meta, tag, tagColor: tagColor || '#8B96A8',
+      bg: sel ? '#1B2230' : '#151B26', border: sel ? '#F2F5F9' : '#232C3C',
+      check: sel ? '#F2F5F9' : '#8B96A8', fill: sel ? '#F2F5F9' : 'transparent', tick: sel ? 1 : 0,
+    });
+    const folders = [
+      F('Music/Metal', '38 TRACKS · 2h 41m', 'ALL HYPE', true),
+      F('Music/Drum & Bass', '23 TRACKS · 1h 30m', '', true),
+      F('Music/Indie', '48 TRACKS · 3h 05m', 'IN MID', false),
+      F('Music/Ambient', '19 TRACKS · 1h 52m', 'IN CHILL', false, '#4FC3F7'),
+      F('Downloads', '41 TRACKS · MIXED', '22 PODCASTS', false),
+      F('Music/Singles', '10 TRACKS · 38m', '', false),
+    ];
+    const bulk = [['Duality', 'Slipknot · 4:12'], ['Bleed It Out', 'Linkin Park · 2:44'], ['Killing In the Name', 'Rage Against the Machine · 5:13'], ['Chop Suey!', 'System of a Down · 3:30'], ['Bodies', 'Drowning Pool · 3:22'], ['Nightcall', 'Kavinsky · 4:18'], ['Blinding Lights', 'The Weeknd · 3:20'], ['Levitating', 'Dua Lipa · 3:23'], ['Cold Little Heart', 'Michael Kiwanuka · 9:59'], ['Breathe', 'Pink Floyd · 2:49']];
+    const bulkRows = bulk.map(([title, sub], i) => ({ title, sub, check: i < 7 ? '#F2F5F9' : '#8B96A8', fill: i < 7 ? '#F2F5F9' : 'transparent' }));
+    const seg = (arr) => arr.map(([w, c]) => ({ w, c }));
+    const R = '#FF5A1F', L = '#4FC3F7', P = '#7E8AA0';
+    const sessions = [
+      { title: 'Snowboarding', meta: 'SAT 7 MAR · LES ARCS · 23 SWITCHES', dur: '3:12', color: R, segs: seg([[5, R], [2, L], [6, R], [2, L], [3, P], [4, R], [2, L]]) },
+      { title: 'Strength', meta: 'THU 5 MAR · 30/90 × 8', dur: '0:16', color: R, segs: seg([[1, R], [3, L], [1, R], [3, L], [1, R], [3, L], [1, R], [3, L]]) },
+      { title: 'Running', meta: 'TUE 3 MAR · 8.2 KM · AVG 151', dur: '0:44', color: R, segs: seg([[2, P], [6, R], [1, P], [7, R], [2, L]]) },
+      { title: 'Cycling', meta: 'SUN 1 MAR · 32 KM', dur: '1:38', color: L, segs: seg([[4, L], [3, R], [6, L], [2, R], [5, L]]) },
+      { title: 'Snowboarding', meta: 'SAT 28 FEB · LES ARCS', dur: '2:40', color: R, segs: seg([[4, R], [2, L], [5, R], [2, L], [4, R], [3, P]]) },
+    ];
+    return { folders, bulkRows, sessions };
+  }
+}
+</script>
+</body>
+</html>

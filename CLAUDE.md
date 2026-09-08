@@ -1,84 +1,62 @@
-# CLAUDE.md — FlowState
+# CLAUDE.md — ActiPlayer
 
 ## What this is
-FlowState is an Android music player that adapts track energy to the athlete's physical
-state (snowboarding first): sensors -> 1 Hz FeatureFrames -> deterministic StateEngine
-(RIDING / LIFT / PAUSED) -> energy band 1-5 -> queue picks from user-rated local tracks.
-BLE heart rate (standard GATT HR profile; a Garmin in Broadcast HR mode) modulates energy
-within a mode, never the mode itself.
+ActiPlayer (formerly FlowState) is an Android music player that adapts track energy to the
+athlete's physical state. Sensors -> 1 Hz FeatureFrames -> deterministic per-activity
+engine -> energy band 1-5 -> queue picks from the user's pools (local files or Spotify
+playlists). Ski/snowboard first; cycling, running, strength, HIIT, generic follow.
 
 ## Source of truth, in priority order
-1. `flowstate-build-brief.md` — the full product + architecture brief. If it isn't in the
-   repo root, ask the human for it before making product-level decisions.
-2. `DECISIONS.md` — every deliberate deviation from the brief, with rationale. Append to
-   it; never silently contradict it.
-3. `README.md` — user-facing behavior, setup, and the human test scripts.
+1. `ACTIPLAYER_PLAN.md` — product decisions, architecture, screen map, build order (§6).
+   Decisions in its §1 are final; do not re-open them.
+2. `design/*.png` — the target screens, named by the IDs used in the plan (A1…D4).
+   Match layout, spacing, type scale and colors. `design/ActiPlayer Redesign.dc.html`
+   is the same design as HTML if you need exact values.
+3. `DECISIONS.md` — every deliberate deviation, with rationale. Append; never contradict silently.
+4. `README.md` — user-facing behavior and test scripts. Update as features land.
 
 ## Commands
 - Build everything: `./gradlew build`
-- Engine unit tests only: `./gradlew :engine:test`
-- Install debug APK on a connected device: `./gradlew :app:installDebug`
-- Gradle needs JDK 21: the system Java is 25 (unsupported by Gradle 8.13). This machine's
-  `~/.gradle/gradle.properties` points `org.gradle.java.home` at Android Studio's bundled
-  JBR (`/usr/local/android-studio/jbr`), so plain `./gradlew` works.
+- Engine unit tests: `./gradlew :engine:test`
+- Install debug APK: `./gradlew :app:installDebug`
+- Gradle needs JDK 21 (see `~/.gradle/gradle.properties` → Android Studio JBR).
 
-## Hard rules (from brief §16)
-- `:engine` never imports Android. Time is injected via frames; no wall-clock calls.
-- All thresholds/windows live in `EngineConfig` — nothing magic inline.
-- Motion + elevation decide the mode; HR only modulates within it (HR lags 1-3 min).
-  Exception: the cycling profile lets HR corroborate the up-switch (see DECISIONS.md).
+## Hard rules
+- `:engine` never imports Android. Time arrives on frames; no wall-clock calls.
+- All thresholds/windows live in `EngineConfig`. Nothing magic inline.
+- Motion + elevation decide the mode; HR only modulates within it (cycling exception logged).
 - Asymmetric hysteresis is sacred: up-switches fast (~3 s), down-switches sure (15-45 s).
-- Compile + tests green before claiming any step done. No stub code presented as done.
+- In-session touch targets ≥ 64 dp. Dark theme only. Mode color is the only saturated fill on session screens.
+- Compile + tests green before claiming a phase done. No stubs presented as done.
 - Product ambiguity -> ask the human. Technical ambiguity -> decide, log in DECISIONS.md.
 - Verify library versions and platform rules against current docs, not memory.
+- Secrets (Spotify client ID, creator unlock hash) live in `local.properties`, never in git.
 
-## Current state
-- Phases 0-4 of the brief (MVP-simplified) plus Phase 5 (BLE heart rate) are implemented.
-- First compile done 2026-07-08: `./gradlew build` succeeded with **zero source fixes**
-  (debug + release APKs, lint clean). On-device verification 2026-07-08 on a Galaxy A52s:
-  app runs, BLE HR pairing works (Garmin Instinct E), playback + mode switching confirmed
-  by the human.
-- UI reworked 2026-07-08 (see DECISIONS.md): first-launch full-screen guide + "?" help
-  button, idle "launch checklist" vs. active "Ride Board" session screens, dark-only
-  token theme (`ui/Theme.kt`), library filter chips + compact rating rows, HR setup
-  prompts to enable Bluetooth itself.
-- Activity profiles added 2026-07-08: `Activity` enum + `ActivityEngine` interface;
-  cycling implemented as `CyclingEngine` (CRUISE/EFFORT, HR co-decides the up-switch —
-  logged deviation) selected per session from the Session tab; running/hiking are
-  disabled menu placeholders. 20 `:engine` tests (11 snowboard + 9 cycling).
-- Implemented:
-  - MediaStore library + 1-5 energy ratings (SharedPreferences).
-  - Media3/ExoPlayer playback in a typed FGS (`mediaPlayback|location`) with MediaSession.
-  - `SensorPipeline`: linear accel (low-pass fallback), barometer with GPS-altitude
-    fallback, framework LocationManager GPS, and an HR buffer producing
-    hrBpm / hrPctMax / hrTrend.
-  - `StateEngine`: confirmation windows, min dwell, decay, RIDING priority, and HR
-    modulation via `energyFor(state, frame)` + `settle()`. 11 JUnit tests, desk-checked.
-  - `QueueController`: band selection with ±1 widening, no-repeat memory, asymmetric
-    volume-ramp fades (fast up, gentle down).
-  - `HeartRateMonitor`: GATT 0x180D/0x2A37 client, scan filtered on the HR service,
-    remembered device, backoff auto-reconnect, dual API-level characteristic callbacks,
-    flags-byte parsing (uint8/uint16).
-  - Compose UI: Session + Library tabs, CHILL/AUTO/HYPE chips, HR setup card with max-HR
-    steppers, live signal readout with decision reasons.
-- Not implemented yet (deliberate; see DECISIONS.md): Hilt, Room, session recording /
-  JSONL trace export + replay, dual-player crossfade with standby preload, gyro/heading
-  features, threshold editor UI, battery pass.
+## Working agreement
+- One phase of `ACTIPLAYER_PLAN.md` §6 per session. At the end of a phase: build, test,
+  install, then STOP and wait for on-device confirmation from the human.
+- Update the phase tracker below and `DECISIONS.md` at every phase gate.
 
-## First session checklist
-1. ~~`./gradlew build`~~ DONE 2026-07-08 — compiled clean, no fixes needed.
-2. ~~`./gradlew :engine:test`~~ DONE 2026-07-08 — 11/11 pass.
-3. Ask the human to install on a physical device and run the README indoor test script
-   (shake -> HYPE; still 30 s -> PAUSED; Garmin broadcast -> live bpm; lower Max HR to
-   force HR modulation and confirm the decision reason reads "HR at NN% of max").
-4. Then continue with the remaining brief items, one phase gate at a time, updating the
-   tracker below and DECISIONS.md as you go.
+## Phase tracker (plan §6)
+- [x] 1 Restructure (modules, Hilt, Room/DataStore, rename, 3-tab shell) — 2026-09-08
+- [ ] 2 Music pools + local dual-player crossfade
+- [ ] 3 Session UI (B1, B2/B3, ReasonFormatter, signal chips)
+- [ ] 4 Recording + History + Recap + share + export
+- [ ] 5 Wizard + permissions (A1–A5)
+- [ ] 6 Profiles: Running, Generic, TimerEngine (D4, B4), sensitivity
+- [ ] 7 Spotify (App Remote + Auth, C5, SourceRouter fallback)
+- [ ] 8 Billing (Pro, trial, paywall D2, creator unlock)
+- [ ] 9 Quick sort (C3) + tempo guess
+- [ ] 10 Release pass
 
-## Phase tracker
-- [x] P0 scaffold   [x] P1 real player   [x] P2 ratings + manual modes
-- [x] P3 sensor pipeline   [x] P4 engine loop   [x] P5 heart rate
-  (compile + unit tests green 2026-07-08; on-device verification still pending)
-- [ ] P6 polish + battery pass
-- [ ] Session recording (Room) + JSONL trace export + in-app replay
-- [ ] Dual-player crossfade with preloaded standby track
-- [ ] Threshold editor / debug dashboard extensions
+## Module map (after phase 1)
+`:engine` (pure Kotlin, no Android) · `:data` (Room + DataStore + MediaStore) ·
+`:sensors` (SensorPipeline, HeartRateMonitor) · `:playback` (ExoPlayer queue,
+PlaybackService, Spotify remote) · `:session` (SessionCoordinator) · `:app` (Compose UI,
+navigation). `:billing` is created in phase 8. DI is Hilt, `SingletonComponent` only.
+Toolchain: Kotlin 2.3.21, AGP 8.13.2, compileSdk 36, targetSdk 35 — the AndroidX versions
+in `gradle/libs.versions.toml` are capped by AGP 8.13 on purpose (see DECISIONS.md).
+
+## Prior state (for context)
+Phases 0-5 of the original FlowState brief were completed and verified on a Galaxy A52s
+(2026-07-08): local playback, ratings, snowboard + cycling engines, BLE HR, Compose UI.
