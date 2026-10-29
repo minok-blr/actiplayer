@@ -1,20 +1,27 @@
 package com.flowstate.engine
 
 /**
- * All engine states across activity profiles. RIDING / LIFT / PAUSED belong to the
- * snowboard profile (build brief §7); CRUISE / EFFORT to the cycling profile. One flat
- * enum keeps [StateDecision] simple — each engine only ever emits its own subset.
+ * All engine states across activity profiles. One flat enum keeps [StateDecision]
+ * simple — each engine only ever emits its own subset, and the UI names them per
+ * activity (a timer's WORK reads as SET under Strength).
  */
-enum class RideState { RIDING, LIFT, PAUSED, CRUISE, EFFORT }
+enum class RideState {
+    RIDING, LIFT, PAUSED, // snowboard
+    CRUISE, EFFORT, // cycling (CRUISE is shared with running)
+    STROLL, BRISK, // walking
+    PUSH, WALK, // running
+    ACTIVE, EASY, // generic
+    WORK, REST, // timer-driven; REST is shared with generic
+}
 
 /**
- * The engine's output. [reason] is a human-readable explanation of exactly which
- * conditions fired — surfaced in the debug UI and, later, the session log. An adaptive
- * player that can't explain itself is an adaptive player nobody trusts.
+ * The engine's output. [reason] carries exactly which conditions fired, in a structured
+ * form the UI can turn into a sentence and a set of lit signal chips — an adaptive player
+ * that can't explain itself is an adaptive player nobody trusts.
  */
 data class StateDecision(
     val state: RideState,
     val targetEnergy: IntRange,
-    val reason: String,
+    val reason: Reason,
     val atMillis: Long,
 )

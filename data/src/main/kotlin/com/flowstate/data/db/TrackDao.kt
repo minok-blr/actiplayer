@@ -14,6 +14,9 @@ interface TrackDao {
     @Upsert
     suspend fun upsertEnergies(energies: List<TrackEnergyEntity>)
 
+    @Query("DELETE FROM track_energy WHERE trackId IN (:trackIds)")
+    suspend fun deleteEnergies(trackIds: List<String>)
+
     @Query("SELECT * FROM track_energy")
     fun observeEnergies(): Flow<List<TrackEnergyEntity>>
 

@@ -30,15 +30,21 @@ import kotlinx.coroutines.launch
 class SpotifyQueueController @Inject constructor(
     private val remote: SpotifyRemote,
     @param:ApplicationScope private val scope: CoroutineScope,
-) : PlaybackBackend {
+) : MusicSource {
 
     private var pool: List<RatedSpotifyTrack> = emptyList()
     private var band: IntRange = 2..3
     private val random = Random(System.currentTimeMillis())
 
-    /** "Title — Artist" polled from Spotify (what's ACTUALLY playing, not what we sent). */
-    private val _nowPlaying = MutableStateFlow<String?>(null)
-    val nowPlaying: StateFlow<String?> = _nowPlaying
+    /** What Spotify reports is ACTUALLY playing, not what we last sent. */
+    private val _nowPlaying = MutableStateFlow<NowPlaying?>(null)
+    override val nowPlaying: StateFlow<NowPlaying?> = _nowPlaying
+
+    private val _availability = MutableStateFlow(Availability.UNAVAILABLE)
+    override val availability: StateFlow<Availability> = _availability
+
+    private val _paused = MutableStateFlow(false)
+    override val paused: StateFlow<Boolean> = _paused
 
     /** Last player-control failure, shown on the Ride Board ("needs Premium" lands here). */
     private val _error = MutableStateFlow<String?>(null)
@@ -49,6 +55,8 @@ class SpotifyQueueController @Inject constructor(
 
     fun setPool(tracks: List<RatedSpotifyTrack>) {
         pool = tracks
+        _availability.value =
+            if (tracks.isEmpty()) Availability.UNAVAILABLE else Availability.READY
     }
 
     /** Starts the now-playing poll; call at session start, paired with [stop]. */
@@ -59,21 +67,40 @@ class SpotifyQueueController @Inject constructor(
             while (isActive) {
                 delay(POLL_MS)
                 runCatching { remote.currentlyPlayingLabel() }
-                    .onSuccess { _nowPlaying.value = it ?: _nowPlaying.value }
+                    .onSuccess { label ->
+                        if (label != null) _nowPlaying.value = label.toNowPlaying()
+                    }
             }
         }
     }
 
-    override fun onBand(newBand: IntRange, energyWentUp: Boolean, force: Boolean) {
-        val changed = newBand != band
-        band = newBand
+    override fun play(band: IntRange, fast: Boolean, force: Boolean) {
+        val changed = band != this.band
+        this.band = band
         if (!force && !changed) return
+        // A pause is the listener's: the new band is remembered and sent on resume.
+        if (_paused.value) return
         sendBatch()
     }
 
     override fun skip() = sendBatch()
 
+    override fun pause() {
+        _paused.value = true
+        scope.launch { runCatching { remote.pausePlayback() } }
+    }
+
+    /** Resuming means re-sending the batch: Connect has no plain "resume" we hold state for. */
+    override fun resume() {
+        _paused.value = false
+        sendBatch()
+    }
+
+    /** Spotify Connect reports position only on the slow poll, so this stays unknown. */
+    override fun progress(): Float? = null
+
     override fun stop() {
+        _paused.value = false
         sendJob?.cancel()
         pollJob?.cancel()
         scope.launch { remote.pausePlayback() }
@@ -92,7 +119,9 @@ class SpotifyQueueController @Inject constructor(
                 remote.playUris(batch.map { it.uri })
                 _error.value = null
                 // Optimistic; the poll corrects it as Spotify advances.
-                _nowPlaying.value = "${batch.first().title} — ${batch.first().artist}"
+                val first = batch.first()
+                _nowPlaying.value =
+                    NowPlaying(first.title, first.artist, first.rating, SOURCE_NAME)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -101,15 +130,26 @@ class SpotifyQueueController @Inject constructor(
         }
     }
 
+    /**
+     * Spotify hands back one display string, not fields; splitting on the em dash we
+     * built it with is best-effort and the artist is simply blank if it is not there.
+     */
+    private fun String.toNowPlaying(): NowPlaying {
+        val parts = split(" — ", limit = 2)
+        return NowPlaying(parts[0], parts.getOrElse(1) { "" }, null, SOURCE_NAME)
+    }
+
     companion object {
+        const val SOURCE_NAME = "Spotify"
         const val POLL_MS = 15_000L
         const val MIN_POOL = 8
         const val MAX_BATCH = 40
 
         /**
-         * Pure batch selection, mirroring [QueueController]'s pick: candidates rated in
-         * the band, widened ±1 when thin, whole pool as the last resort — then shuffled
-         * so Spotify's auto-advance stays varied.
+         * Pure batch selection, mirroring [TrackPicker]: candidates rated in the band,
+         * widened ±1 when thin, and only then the nearest band the ratings cover — never
+         * the whole pool, which would hand a hype block chill tracks. Shuffled so
+         * Spotify's auto-advance stays varied.
          */
         internal fun batchFor(
             pool: List<RatedSpotifyTrack>,
@@ -122,7 +162,10 @@ class SpotifyQueueController @Inject constructor(
             if (pot.size < MIN_POOL) {
                 pot = candidates((band.first - 1).coerceAtLeast(1)..(band.last + 1).coerceAtMost(5))
             }
-            if (pot.isEmpty()) pot = pool
+            if (pot.isEmpty()) {
+                val nearest = pool.minOf { TrackPicker.distance(it.rating, band) }
+                pot = pool.filter { TrackPicker.distance(it.rating, band) == nearest }
+            }
             return pot.shuffled(random).take(MAX_BATCH)
         }
     }

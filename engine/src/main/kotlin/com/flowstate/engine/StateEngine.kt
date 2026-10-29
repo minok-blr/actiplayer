@@ -42,31 +42,36 @@ class StateEngine(private val config: EngineConfig = EngineConfig()) : ActivityE
             lastRuleFiredMs = now
         }
 
-        val fired = firedState(frame)
+        val fired = fired(frame)
         if (fired != null) lastRuleFiredMs = now
 
         val dwellElapsed = now - enteredAtMs >= minDwellMs(current)
 
-        if (fired == null || fired == current) {
+        if (fired == null || fired.state == current) {
             candidate = null
             if (current != RideState.PAUSED && dwellElapsed &&
                 now - lastRuleFiredMs >= config.decayToPausedMs
             ) {
-                val quiet = (now - lastRuleFiredMs) / 1000
-                return transition(RideState.PAUSED, now, frame, "decay: no signals for ${quiet}s")
+                val quiet = now - lastRuleFiredMs
+                return transition(RideState.PAUSED, now, frame, Reason.Decayed(quiet))
             }
             return settle(now, frame)
         }
 
         // A different state's rule fired.
-        if (candidate != fired) {
-            candidate = fired
+        if (candidate != fired.state) {
+            candidate = fired.state
             candidateSinceMs = now
         }
         val heldMs = now - candidateSinceMs
-        if (heldMs >= confirmMs(fired) && dwellElapsed) {
+        if (heldMs >= confirmMs(fired.state) && dwellElapsed) {
             candidate = null
-            return transition(fired, now, frame, describe(fired, frame, heldMs))
+            return transition(
+                fired.state,
+                now,
+                frame,
+                Reason.Confirmed(fired.state, heldMs, fired.evidence),
+            )
         }
         return settle(now, frame)
     }
@@ -85,7 +90,7 @@ class StateEngine(private val config: EngineConfig = EngineConfig()) : ActivityE
         to: RideState,
         now: Long,
         frame: FeatureFrame,
-        reason: String,
+        reason: Reason,
     ): StateDecision {
         current = to
         enteredAtMs = now
@@ -100,7 +105,7 @@ class StateEngine(private val config: EngineConfig = EngineConfig()) : ActivityE
      */
     private fun settle(now: Long, frame: FeatureFrame): StateDecision {
         val last = lastDecision
-            ?: return StateDecision(current, energyFor(current, frame), "session start", now)
+            ?: return StateDecision(current, energyFor(current, frame), Reason.SessionStart, now)
                 .also { lastDecision = it }
         val band = energyFor(current, frame)
         if (band != last.targetEnergy) {
@@ -110,40 +115,55 @@ class StateEngine(private val config: EngineConfig = EngineConfig()) : ActivityE
         return last
     }
 
+    /** A rule that fired, and the conditions that carried it. */
+    private data class Fired(val state: RideState, val evidence: Set<Evidence>)
+
     // Rules, checked in priority order. RIDING outranks everything (brief §7).
-    private fun firedState(f: FeatureFrame): RideState? = when {
-        ridingRule(f) -> RideState.RIDING
-        liftRule(f) -> RideState.LIFT
-        pausedRule(f) -> RideState.PAUSED
-        else -> null
+    private fun fired(f: FeatureFrame): Fired? {
+        riding(f)?.let { return Fired(RideState.RIDING, it) }
+        lift(f)?.let { return Fired(RideState.LIFT, it) }
+        paused(f)?.let { return Fired(RideState.PAUSED, it) }
+        return null
     }
 
-    private fun ridingRule(f: FeatureFrame): Boolean {
-        val m = f.motionRms ?: return false
-        if (m <= config.ridingMotionRms) return false
+    private fun riding(f: FeatureFrame): Set<Evidence>? {
+        val m = f.motionRms ?: return null
+        if (m <= config.ridingMotionRms) return null
         val descending = f.vertRate?.let { it < config.ridingVertRate } ?: false
         val fast = f.speed?.let { it > config.ridingSpeed } ?: false
         // GPS and barometer both dark (trees, tight tree runs, indoor warm-up): allow motion
         // alone, but demand a stricter bar so brisk walking never reads as riding.
         val blind = f.vertRate == null && f.speed == null && m > config.ridingMotionRmsBlind
-        return descending || fast || blind
+        if (!descending && !fast && !blind) return null
+        return buildSet {
+            add(Evidence.HEAVY_MOTION)
+            if (descending) add(Evidence.DESCENDING)
+            if (fast) add(Evidence.MOVING_FAST)
+            if (blind) add(Evidence.NO_FIX)
+        }
     }
 
-    private fun liftRule(f: FeatureFrame): Boolean {
-        val m = f.motionRms ?: return false
-        if (m >= config.calmMotionRms) return false
-        val v = f.vertRate ?: return false // the climb IS the lift's fingerprint; no climb signal, no LIFT
-        if (v <= config.liftVertRate) return false
-        val s = f.speed ?: return true // barometer doesn't care about tree cover; GPS optional here
-        return s in config.liftSpeedMin..config.liftSpeedMax
+    private fun lift(f: FeatureFrame): Set<Evidence>? {
+        val m = f.motionRms ?: return null
+        if (m >= config.calmMotionRms) return null
+        val v = f.vertRate ?: return null // the climb IS the lift's fingerprint; no climb signal, no LIFT
+        if (v <= config.liftVertRate) return null
+        val evidence = setOf(Evidence.STEADY_CLIMB, Evidence.BARELY_MOVING)
+        val s = f.speed ?: return evidence // barometer doesn't care about tree cover; GPS optional
+        return if (s in config.liftSpeedMin..config.liftSpeedMax) evidence else null
     }
 
-    private fun pausedRule(f: FeatureFrame): Boolean {
-        val m = f.motionRms ?: return false
-        if (m >= config.calmMotionRms) return false
+    private fun paused(f: FeatureFrame): Set<Evidence>? {
+        val m = f.motionRms ?: return null
+        if (m >= config.calmMotionRms) return null
         val vertStill = f.vertRate?.let { kotlin.math.abs(it) < config.pausedVertRateMax } ?: true
         val slow = f.speed?.let { it < config.pausedSpeedMax } ?: true
-        return vertStill && slow
+        if (!vertStill || !slow) return null
+        return buildSet {
+            add(Evidence.STILL)
+            if (f.vertRate != null) add(Evidence.LEVEL)
+            if (f.speed != null) add(Evidence.SLOW)
+        }
     }
 
     /**
@@ -178,21 +198,22 @@ class StateEngine(private val config: EngineConfig = EngineConfig()) : ActivityE
         }
     }
 
-    private fun hrReason(f: FeatureFrame, band: IntRange): String {
+    private fun hrReason(f: FeatureFrame, band: IntRange): Reason {
         val pct = f.hrPctMax
         val trend = f.hrTrend
-        val cause = when {
-            pct != null && pct >= config.ridingHighHrPct -> "HR at ${(pct * 100).toInt()}% of max"
-            trend != null && trend <= config.pausedFallingHrTrend -> "HR falling"
-            else -> "HR modulation ended"
+        val effect = when {
+            pct != null && pct >= config.ridingHighHrPct -> HrEffect.REDLINING
+            trend != null && trend <= config.pausedFallingHrTrend -> HrEffect.FALLING
+            else -> HrEffect.ENDED
         }
-        return "$current: $cause -> energy ${band.first}-${band.last}"
+        return Reason.HeartRate(effect, pct, trend, band)
     }
 
     private fun confirmMs(s: RideState): Long = when (s) {
+        // RIDING is the up-switch and never scales; the calm states do.
         RideState.RIDING -> config.ridingConfirmMs
-        RideState.LIFT -> config.liftConfirmMs
-        else -> config.pausedConfirmMs
+        RideState.LIFT -> config.down(config.liftConfirmMs)
+        else -> config.down(config.pausedConfirmMs)
     }
 
     private fun minDwellMs(s: RideState): Long = when (s) {
@@ -201,8 +222,4 @@ class StateEngine(private val config: EngineConfig = EngineConfig()) : ActivityE
         else -> config.pausedMinDwellMs
     }
 
-    private fun describe(s: RideState, f: FeatureFrame, heldMs: Long): String {
-        fun fmt(x: Double?) = x?.let { "%.1f".format(it) } ?: "-"
-        return "$s after ${heldMs / 1000}s: motion=${fmt(f.motionRms)} vert=${fmt(f.vertRate)} speed=${fmt(f.speed)}"
-    }
 }

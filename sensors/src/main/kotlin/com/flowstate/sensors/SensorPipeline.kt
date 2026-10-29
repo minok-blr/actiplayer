@@ -183,11 +183,14 @@ class SensorPipeline(
             motionRms = motionRms(now),
             vertRate = vertRate(now),
             speed = freshSpeed(now),
+            cadence = cadence(now),
             hrBpm = bpm,
             hrPctMax = bpm?.let { it.toDouble() / maxHr().coerceAtLeast(1) },
             hrTrend = hrTrend(now),
         )
     }
+
+    private fun cadence(now: Long): Double? = Cadence.spm(accelBuf, now)
 
     private fun motionRms(now: Long): Double? {
         val window = accelBuf.filter { now - it.first <= 3_000 }
@@ -252,7 +255,10 @@ class SensorPipeline(
 
     private fun pushAccel(t: Long, mag: Double) {
         accelBuf.addLast(t to mag)
-        while (accelBuf.isNotEmpty() && t - accelBuf.first().first > 5_000) accelBuf.removeFirst()
+        // Cadence needs the longest look back of any feature, so it sets the retention.
+        while (accelBuf.isNotEmpty() && t - accelBuf.first().first > Cadence.RETENTION_MS) {
+            accelBuf.removeFirst()
+        }
     }
 
     private fun pushAltitude(t: Long, alt: Double) {

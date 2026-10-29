@@ -15,6 +15,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
+ * What the user has explicitly said about local tracks: a band, or "never play this".
+ * Both beat pool membership, which is why they travel together.
+ */
+data class LocalEnergies(
+    val ratings: Map<Long, Int> = emptyMap(),
+    val excluded: Set<Long> = emptySet(),
+)
+
+/**
  * Energy ratings for local (MediaStore) tracks, 1 (couch) .. 5 (send it), on Room.
  *
  * Writes are fire-and-forget on the application scope so the rating controls stay
@@ -33,34 +42,44 @@ class RatingsRepository @Inject constructor(
         .map { rows -> rows.toLocalRatingMap() }
         .stateIn(scope, SharingStarted.Eagerly, emptyMap())
 
-    fun setRating(mediaStoreId: Long, rating: Int) {
-        val clamped = rating.coerceIn(1, 5)
+    /** mediaStoreIds the user excluded from every pool. */
+    val excluded: StateFlow<Set<Long>> = dao.observeEnergies()
+        .map { rows -> rows.toExcludedIds() }
+        .stateIn(scope, SharingStarted.Eagerly, emptySet())
+
+    fun setRating(mediaStoreId: Long, rating: Int) = setBands(listOf(mediaStoreId), rating)
+
+    /** Band 1..5, or null to exclude the track from every pool (screen C4). */
+    fun setBands(mediaStoreIds: List<Long>, band: Int?) {
+        if (mediaStoreIds.isEmpty()) return
+        val clamped = band?.coerceIn(1, 5)
+        val now = System.currentTimeMillis()
         scope.launch {
             dao.upsertEnergies(
-                listOf(
-                    TrackEnergyEntity(
-                        trackId = TrackEntity.localId(mediaStoreId),
-                        band = clamped,
-                        source = EnergySource.USER,
-                        updatedAt = System.currentTimeMillis(),
-                    ),
-                ),
+                mediaStoreIds.map {
+                    TrackEnergyEntity(TrackEntity.localId(it), clamped, EnergySource.USER, now)
+                },
             )
         }
+    }
+
+    /** Back to unsorted: forget what the user said and let pools decide again. */
+    fun clear(mediaStoreIds: List<Long>) {
+        if (mediaStoreIds.isEmpty()) return
+        scope.launch { dao.deleteEnergies(mediaStoreIds.map { TrackEntity.localId(it) }) }
     }
 
     /**
      * A consistent read for session start, straight from the database rather than the
      * observable cache — a session must never begin with a half-populated pool.
      */
-    suspend fun snapshot(): Map<Long, Int> = dao.energies().toLocalRatingMap()
+    suspend fun snapshot(): LocalEnergies = dao.energies().let {
+        LocalEnergies(it.toLocalRatingMap(), it.toExcludedIds())
+    }
 
     companion object {
         const val UNRATED_DEFAULT = 3
         private const val LOCAL_PREFIX = "local:"
-
-        fun effectiveRating(ratings: Map<Long, Int>, mediaStoreId: Long): Int =
-            ratings[mediaStoreId] ?: UNRATED_DEFAULT
 
         /**
          * Energy rows -> mediaStoreId/band map. Spotify rows and excluded tracks drop
@@ -70,10 +89,21 @@ class RatingsRepository @Inject constructor(
         internal fun List<TrackEnergyEntity>.toLocalRatingMap(): Map<Long, Int> =
             mapNotNull { row ->
                 val band = row.band ?: return@mapNotNull null // excluded
-                if (!row.trackId.startsWith(LOCAL_PREFIX)) return@mapNotNull null
-                val id = row.trackId.removePrefix(LOCAL_PREFIX).toLongOrNull()
-                    ?: return@mapNotNull null
+                val id = row.localId() ?: return@mapNotNull null
                 id to band
             }.toMap()
+
+        /** Rows with no band are the user saying "never play this" (plan §3.1 EXCLUDED). */
+        internal fun List<TrackEnergyEntity>.toExcludedIds(): Set<Long> =
+            mapNotNullTo(mutableSetOf()) { row ->
+                if (row.band != null) null else row.localId()
+            }
+
+        private fun TrackEnergyEntity.localId(): Long? =
+            if (!trackId.startsWith(LOCAL_PREFIX)) {
+                null
+            } else {
+                trackId.removePrefix(LOCAL_PREFIX).toLongOrNull()
+            }
     }
 }

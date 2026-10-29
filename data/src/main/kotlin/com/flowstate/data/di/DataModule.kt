@@ -3,6 +3,8 @@ package com.flowstate.data.di
 import android.content.Context
 import androidx.room.Room
 import com.flowstate.data.db.ActiDatabase
+import com.flowstate.data.db.PoolDao
+import com.flowstate.data.db.SessionDao
 import com.flowstate.data.db.TrackDao
 import dagger.Module
 import dagger.Provides
@@ -25,6 +27,12 @@ object DataModule {
 
     @Provides
     fun trackDao(database: ActiDatabase): TrackDao = database.trackDao()
+
+    @Provides
+    fun poolDao(database: ActiDatabase): PoolDao = database.poolDao()
+
+    @Provides
+    fun sessionDao(database: ActiDatabase): SessionDao = database.sessionDao()
 
     /**
      * Main-dispatcher application scope. Sensors, engine and player commands are

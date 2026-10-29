@@ -1,5 +1,6 @@
 package com.flowstate.data
 
+import com.flowstate.data.RatingsRepository.Companion.toExcludedIds
 import com.flowstate.data.RatingsRepository.Companion.toLocalRatingMap
 import com.flowstate.data.db.EnergySource
 import com.flowstate.data.db.TrackEnergyEntity
@@ -35,15 +36,10 @@ class RatingsRepositoryTest {
     }
 
     @Test
-    fun `excluded tracks drop out rather than defaulting to a band`() {
-        val map = listOf(row(TrackEntity.localId(9L), null)).toLocalRatingMap()
+    fun `excluded tracks drop out of the ratings map and into the excluded set`() {
+        val rows = listOf(row(TrackEntity.localId(9L), null), row(TrackEntity.localId(3L), 4))
 
-        assertEquals(emptyMap<Long, Int>(), map)
-    }
-
-    @Test
-    fun `unrated tracks fall back to the neutral default`() {
-        assertEquals(3, RatingsRepository.effectiveRating(mapOf(1L to 5), 2L))
-        assertEquals(5, RatingsRepository.effectiveRating(mapOf(1L to 5), 1L))
+        assertEquals(mapOf(3L to 4), rows.toLocalRatingMap())
+        assertEquals(setOf(9L), rows.toExcludedIds())
     }
 }

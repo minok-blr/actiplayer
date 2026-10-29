@@ -16,6 +16,11 @@ data class FeatureFrame(
     val vertRate: Double?,
     /** Ground speed in m/s from GPS. Null when there is no fresh fix. */
     val speed: Double?,
+    /**
+     * Steps per minute from accelerometer peaks. Works with no GPS fix at all, which is
+     * what separates a run from a walk indoors or under tree cover.
+     */
+    val cadence: Double? = null,
     /** Latest heart rate in bpm from a BLE monitor. Null when absent or stale. */
     val hrBpm: Int? = null,
     /** hrBpm as a fraction of the user's configured max HR. */

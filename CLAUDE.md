@@ -24,7 +24,8 @@ playlists). Ski/snowboard first; cycling, running, strength, HIIT, generic follo
 ## Hard rules
 - `:engine` never imports Android. Time arrives on frames; no wall-clock calls.
 - All thresholds/windows live in `EngineConfig`. Nothing magic inline.
-- Motion + elevation decide the mode; HR only modulates within it (cycling exception logged).
+- Motion + elevation decide the mode; HR only modulates within it (cycling and walking
+  exceptions logged in DECISIONS.md).
 - Asymmetric hysteresis is sacred: up-switches fast (~3 s), down-switches sure (15-45 s).
 - In-session touch targets ≥ 64 dp. Dark theme only. Mode color is the only saturated fill on session screens.
 - Compile + tests green before claiming a phase done. No stubs presented as done.
@@ -39,11 +40,15 @@ playlists). Ski/snowboard first; cycling, running, strength, HIIT, generic follo
 
 ## Phase tracker (plan §6)
 - [x] 1 Restructure (modules, Hilt, Room/DataStore, rename, 3-tab shell) — 2026-09-08
-- [ ] 2 Music pools + local dual-player crossfade
-- [ ] 3 Session UI (B1, B2/B3, ReasonFormatter, signal chips)
-- [ ] 4 Recording + History + Recap + share + export
-- [ ] 5 Wizard + permissions (A1–A5)
-- [ ] 6 Profiles: Running, Generic, TimerEngine (D4, B4), sensitivity
+- [x] 2 Music pools + local dual-player crossfade — 2026-09-08
+- [x] 3 Session UI (B1, B2/B3, ReasonFormatter, signal chips) — 2026-09-08
+- [~] 4 Recording + History + Recap — 2026-09-09 (share card B6 + JSON export
+      deliberately deferred to phase 10)
+- [x] 5 Wizard + permissions (A1–A5) — 2026-09-09
+- [x] 6 Profiles: Running, Generic, TimerEngine (D4, B4), sensitivity — 2026-09-10
+      (verified on device 2026-09-11; five UI defects found and fixed, see DECISIONS.md)
+- Review pass (not a phase) — 2026-09-29: foreground service, cadence, cycling HR,
+  picker, pause, D3 Settings and a UI consistency sweep; see DECISIONS.md
 - [ ] 7 Spotify (App Remote + Auth, C5, SourceRouter fallback)
 - [ ] 8 Billing (Pro, trial, paywall D2, creator unlock)
 - [ ] 9 Quick sort (C3) + tempo guess

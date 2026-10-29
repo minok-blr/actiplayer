@@ -32,14 +32,17 @@ class LegacyRatingsImport @Inject constructor(
 
     suspend fun runIfNeeded() {
         if (settings.legacyRatingsImported.value) return
-        runCatching {
-            importLocal()
-            importSpotify()
-        }.onFailure { Log.w(TAG, "legacy ratings import failed", it) }
-        settings.markLegacyRatingsImported()
+        val found = runCatching { importLocal() + importSpotify() }
+            .onFailure { Log.w(TAG, "legacy ratings import failed", it) }
+            .getOrDefault(0)
+        // Only close the door once something was actually imported. Marking it done on an
+        // empty device would mean a later restore from backup — or a reinstall that puts
+        // the old preference files back — is silently ignored forever.
+        if (found > 0) settings.markLegacyRatingsImported()
     }
 
-    private suspend fun importLocal() {
+    /** @return how many ratings were imported. */
+    private suspend fun importLocal(): Int {
         val prefs = context.getSharedPreferences("ratings", Context.MODE_PRIVATE)
         val now = System.currentTimeMillis()
         val energies = prefs.all.mapNotNull { (key, value) ->
@@ -47,12 +50,14 @@ class LegacyRatingsImport @Inject constructor(
             val band = (value as? Int)?.coerceIn(1, 5) ?: return@mapNotNull null
             TrackEnergyEntity(TrackEntity.localId(mediaStoreId), band, EnergySource.USER, now)
         }
-        if (energies.isEmpty()) return
+        if (energies.isEmpty()) return 0
         dao.upsertEnergies(energies)
         Log.i(TAG, "imported ${energies.size} local ratings")
+        return energies.size
     }
 
-    private suspend fun importSpotify() {
+    /** @return how many ratings were imported. */
+    private suspend fun importSpotify(): Int {
         val prefs = context.getSharedPreferences("spotify_ratings", Context.MODE_PRIVATE)
         val now = System.currentTimeMillis()
         val tracks = mutableListOf<TrackEntity>()
@@ -74,10 +79,11 @@ class LegacyRatingsImport @Inject constructor(
             )
             energies += TrackEnergyEntity(id, json.optInt("r", 3).coerceIn(1, 5), EnergySource.USER, now)
         }
-        if (tracks.isEmpty()) return
+        if (tracks.isEmpty()) return 0
         dao.upsertTracks(tracks)
         dao.upsertEnergies(energies)
         Log.i(TAG, "imported ${tracks.size} Spotify ratings")
+        return tracks.size
     }
 
     private companion object {

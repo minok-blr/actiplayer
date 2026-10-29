@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The mode strip, which is the app's one idea: energy switching between states. Same
+  bars as the A1 welcome screen, in the same three mode colours.
+
+  Adaptive-icon foregrounds are 108dp with only the central 66dp guaranteed visible, so
+  everything here sits between 27 and 81 on both axes.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FF5A1F"
+        android:pathData="M31,31h46a5,5 0,0 1,0,10h-46a5,5 0,0 1,0,-10z" />
+    <path
+        android:fillColor="#4FC3F7"
+        android:pathData="M42,43h24a5,5 0,0 1,0,10h-24a5,5 0,0 1,0,-10z" />
+    <path
+        android:fillColor="#FF5A1F"
+        android:pathData="M35,55h38a5,5 0,0 1,0,10h-38a5,5 0,0 1,0,-10z" />
+    <path
+        android:fillColor="#7E8AA0"
+        android:pathData="M47,67h14a5,5 0,0 1,0,10h-14a5,5 0,0 1,0,-10z" />
+</vector>

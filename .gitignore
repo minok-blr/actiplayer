@@ -1,0 +1,15 @@
+# Build output
+build/
+.gradle/
+.kotlin/
+*.apk
+*.aab
+
+# Local configuration (SDK path, Spotify client ID, creator unlock hash)
+local.properties
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+captures/

@@ -1,5 +1,8 @@
 package com.flowstate.app.ui
 
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.ui.unit.sp
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,8 +47,9 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.flowstate.data.MusicSource
-import com.flowstate.engine.RideState
+import com.flowstate.data.SourceKind
+import com.flowstate.app.ui.session.modeColor
+import com.flowstate.app.ui.session.modeLabel
 import com.flowstate.session.SessionCoordinator
 
 /**
@@ -56,7 +60,18 @@ object Routes {
     const val HOME = "home"
     const val MUSIC = "music"
     const val MUSIC_SPOTIFY = "music/spotify"
+    const val MUSIC_ADD = "music/add/{level}"
+    const val MUSIC_EDIT = "music/edit/{filter}"
+
+    fun musicAdd(level: String) = "music/add/$level"
+    fun musicEdit(filter: String) = "music/edit/$filter"
     const val HISTORY = "history"
+    const val SESSION = "session"
+    const val TIMER_SETUP = "timer"
+    const val SETTINGS = "settings"
+    const val RECAP = "recap/{sessionId}"
+
+    fun recap(sessionId: Long) = "recap/$sessionId"
 }
 
 enum class TopLevelDestination(val route: String, val label: String, val icon: ImageVector) {
@@ -102,8 +117,9 @@ fun AppBottomBar(navController: NavHostController) {
                     Spacer(Modifier.height(4.dp))
                     Text(
                         destination.label,
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                        fontFamily = Sans,
+                        fontSize = 12.sp,
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
                         color = tint,
                     )
                     Spacer(Modifier.height(4.dp))
@@ -123,12 +139,18 @@ fun AppBottomBar(navController: NavHostController) {
 /**
  * Single-top navigation between tabs, popping back to Home so the system back button
  * always leaves by the same door instead of unwinding a pile of tab visits.
+ *
+ * Deliberately **no** `saveState`/`restoreState`. Those exist for tabs whose routes live
+ * in nested graphs; these routes are flat siblings, so saving on `popUpTo(start)` stores
+ * whatever sub-screen happened to be on the stack under the *start* destination, and
+ * restoring it later drops you there. Concretely: open Music from Home's ready-check row,
+ * switch to History, tap Home — and you land on Music. A tab now always opens its own
+ * root, which is what a tab bar promises.
  */
-private fun NavHostController.navigateToTopLevel(destination: TopLevelDestination) {
+internal fun NavHostController.navigateToTopLevel(destination: TopLevelDestination) {
     navigate(destination.route) {
-        popUpTo(graph.findStartDestination().id) { saveState = true }
+        popUpTo(graph.findStartDestination().id)
         launchSingleTop = true
-        restoreState = true
     }
 }
 
@@ -136,31 +158,28 @@ private fun NavHostController.navigateToTopLevel(destination: TopLevelDestinatio
 @Composable
 fun MiniPlayerBar(coordinator: SessionCoordinator, onOpen: () -> Unit) {
     val state by coordinator.state.collectAsStateWithLifecycle()
-    val localNow by coordinator.queue.nowPlaying.collectAsStateWithLifecycle()
-    val spotifyNow by coordinator.spotifyQueue.nowPlaying.collectAsStateWithLifecycle()
+    val nowPlaying by coordinator.nowPlaying.collectAsStateWithLifecycle()
+    val paused by coordinator.paused.collectAsStateWithLifecycle()
 
     val mode = state.decision?.state
-    val modeColor = when (mode) {
-        RideState.RIDING, RideState.EFFORT -> ActiColors.riding
-        RideState.LIFT, RideState.CRUISE -> ActiColors.lift
-        RideState.PAUSED, null -> ActiColors.paused
-    }
-    val title = when (state.source) {
-        MusicSource.SPOTIFY -> spotifyNow ?: "sending tracks to Spotify…"
-        MusicSource.LOCAL -> localNow?.let { "${it.track.title} — ${it.track.artist}" }
-            ?: "picking a track…"
-    }
+    val modeColor = mode.modeColor(state.activity)
+    val title = nowPlaying?.let { joinNonEmpty(it.title, it.artist, separator = " — ") }
+        ?: when (state.source) {
+            SourceKind.SPOTIFY -> "Sending tracks to Spotify…"
+            SourceKind.LOCAL -> "Picking a track…"
+        }
 
     Surface(color = ActiColors.surfaceHigh) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onOpen)
-                .padding(start = 14.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
+                .clickable(onClickLabel = "Open session", onClick = onOpen)
+                .padding(start = 14.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
         ) {
             Box(Modifier.size(10.dp).background(modeColor, CircleShape))
+            Spacer(Modifier.width(4.dp))
             Column(Modifier.weight(1f)) {
                 Text(
                     title,
@@ -169,14 +188,21 @@ fun MiniPlayerBar(coordinator: SessionCoordinator, onOpen: () -> Unit) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Text(
-                    "${mode?.name ?: "STARTING"} · band ${state.effectiveBand.first}–${state.effectiveBand.last}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = ActiColors.dim,
+                Caption(
+                    if (paused) "Paused · ${mode.modeLabel(state.activity)}" else mode.modeLabel(state.activity),
+                    color = if (paused) ActiColors.hot else ActiColors.dim,
+                    maxLines = 1,
+                )
+            }
+            IconButton(onClick = { coordinator.togglePause() }) {
+                Icon(
+                    if (paused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause,
+                    contentDescription = if (paused) "Resume" else "Pause",
+                    tint = ActiColors.snow,
                 )
             }
             IconButton(onClick = { coordinator.skip() }) {
-                Icon(Icons.Rounded.SkipNext, contentDescription = "Skip", tint = ActiColors.snow)
+                Icon(Icons.Rounded.SkipNext, contentDescription = "Skip track", tint = ActiColors.snow)
             }
         }
     }

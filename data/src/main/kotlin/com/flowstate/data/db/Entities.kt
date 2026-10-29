@@ -58,3 +58,35 @@ data class TrackEnergyEntity(
     val source: EnergySource,
     val updatedAt: Long,
 )
+
+/**
+ * The three user-facing energy levels (plan §3.1). The engine still thinks in bands 1..5;
+ * these are the buckets a user actually sorts music into, and [band] is what a track
+ * inherits from the pool it sits in when it has no explicit rating of its own.
+ */
+enum class EnergyLevel(val band: Int) {
+    CHILL(1),
+    MID(3),
+    HYPE(5),
+}
+
+/** What kind of thing was added to a pool. Spotify playlists arrive in phase 7. */
+enum class PoolSourceKind { FOLDER, ALBUM, PLAYLIST, SPOTIFY_PLAYLIST }
+
+/**
+ * One source feeding one energy pool — a folder, an album, a device playlist, or (later)
+ * a Spotify playlist.
+ *
+ * The primary key is (kind, key), so a given folder lives in exactly one pool: adding it
+ * to Mid when it is already in Hype moves it, which is what C2's "IN MID" badge and C4's
+ * move buttons both imply. [label] is denormalised so a pool can be drawn without
+ * re-scanning MediaStore.
+ */
+@Entity(tableName = "pool_sources", primaryKeys = ["kind", "key"])
+data class PoolSourceEntity(
+    val kind: PoolSourceKind,
+    val key: String,
+    val level: EnergyLevel,
+    val label: String,
+    val addedAt: Long,
+)

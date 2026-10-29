@@ -1,5 +1,10 @@
 package com.flowstate.sensors
 
+import android.bluetooth.BluetoothAdapter
+import android.content.BroadcastReceiver
+import android.content.Intent
+import android.content.IntentFilter
+import androidx.core.content.ContextCompat
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
@@ -81,6 +86,45 @@ class HeartRateMonitor @Inject constructor(
     private val _scanResults = MutableStateFlow<List<HrDevice>>(emptyList())
     val scanResults: StateFlow<List<HrDevice>> = _scanResults
 
+    /**
+     * Whether the Bluetooth radio is on, kept live from the system broadcast. The setup
+     * screens used to ask the system to enable Bluetooth and start scanning the moment the
+     * request returned — while the radio was still turning on, so the scan silently did
+     * nothing and the screen sat on "Not scanning. Check Bluetooth is on." with Bluetooth
+     * on and no way forward.
+     */
+    private val _bluetoothOn = MutableStateFlow(adapter?.isEnabled == true)
+    val bluetoothOn: StateFlow<Boolean> = _bluetoothOn
+
+    /** A scan was asked for while the radio was off or turning on; run it once it is on. */
+    private var scanWhenOn = false
+
+    init {
+        ContextCompat.registerReceiver(
+            appContext,
+            object : BroadcastReceiver() {
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    val radio = intent?.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
+                    _bluetoothOn.value = radio == BluetoothAdapter.STATE_ON
+                    when (radio) {
+                        BluetoothAdapter.STATE_ON -> if (scanWhenOn) {
+                            scanWhenOn = false
+                            startScan()
+                        }
+                        BluetoothAdapter.STATE_TURNING_OFF, BluetoothAdapter.STATE_OFF -> stopScan()
+                    }
+                }
+            },
+            IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED),
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+    }
+
+    /** Scan now if the radio is on, or as soon as it comes on. */
+    fun requestScan() {
+        if (adapter?.isEnabled == true) startScan() else scanWhenOn = true
+    }
+
     private var gatt: BluetoothGatt? = null
     private var desired = false // should we hold / re-establish a connection?
     private var reconnectJob: Job? = null
@@ -140,11 +184,26 @@ class HeartRateMonitor @Inject constructor(
 
     // ------------------------------------------------------------------ connecting
 
-    /** Connect to the remembered monitor, if any. Safe no-op when none is set up. */
-    fun connect() {
+    /**
+     * Connect to the remembered monitor, if there is one.
+     *
+     * [establish] tears the GATT link down before rebuilding it, and session start calls
+     * this unconditionally — so by default an existing connection is left alone. Without
+     * that, starting a session while already connected would drop a working strap and
+     * restart the whole connect dance (service discovery, notification enable, first
+     * notify), which is seconds of no heart rate at exactly the wrong moment.
+     *
+     * @param force always rebuild, for the user tapping "Connect now": an explicit
+     *   request has to be able to break a connect attempt that has silently stalled.
+     */
+    fun connect(force: Boolean = false) {
         val address = rememberedAddress() ?: return
+        if (!force && desired && _state.value.holdsConnection()) return
         establish(address, rememberedName())
     }
+
+    private fun HrState.holdsConnection(): Boolean =
+        this is HrState.Connected || this is HrState.Connecting || this is HrState.Reconnecting
 
     fun connectTo(device: HrDevice) {
         stopScan()
@@ -245,7 +304,12 @@ class HeartRateMonitor @Inject constructor(
                 return
             }
             gatt.setCharacteristicNotification(characteristic, true)
-            val ccc = characteristic.getDescriptor(CCC_DESCRIPTOR) ?: return
+            // Without the notification descriptor nothing will ever arrive; returning quietly
+            // left the monitor on "Connecting…" for good. Drop it and let the retry run.
+            val ccc = characteristic.getDescriptor(CCC_DESCRIPTOR) ?: run {
+                gatt.disconnect()
+                return
+            }
             ccc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             gatt.writeDescriptor(ccc)
         }

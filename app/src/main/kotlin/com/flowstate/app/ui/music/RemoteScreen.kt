@@ -11,9 +11,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
-import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flowstate.app.ui.ActiColors
 import com.flowstate.app.ui.ArtTile
 import com.flowstate.app.ui.RatingBoxes
+import com.flowstate.app.ui.BackLink
 import com.flowstate.app.ui.ScreenHeader
 import com.flowstate.data.SettingsStore
 import com.flowstate.data.SpotifyRatingsRepository
@@ -43,13 +44,20 @@ import java.net.URLEncoder
  * engine still runs on the local library.
  */
 @Composable
-fun RemoteScreen(spotify: SpotifyRemote, settings: SettingsStore, spotifyRatings: SpotifyRatingsRepository) {
+fun RemoteScreen(
+    spotify: SpotifyRemote,
+    settings: SettingsStore,
+    spotifyRatings: SpotifyRatingsRepository,
+    onBack: () -> Unit,
+) {
     Column(
         Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        ScreenHeader("Streaming", "your services, wired into ActiPlayer")
+        // Every other screen under a tab opens with its way back; this one had none.
+        BackLink("Music", onBack, Modifier.padding(start = 16.dp, top = 8.dp))
+        ScreenHeader("Streaming", "Your services, wired into ActiPlayer")
         Column(
             Modifier.padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -409,11 +417,10 @@ private fun RemoteSectionHeader(label: String, brand: androidx.compose.ui.graphi
         ) {
             Box(Modifier.size(10.dp).background(brand, CircleShape))
             Text(
-                label.uppercase(),
-                style = MaterialTheme.typography.labelMedium,
+                label,
+                style = MaterialTheme.typography.titleMedium,
                 color = ActiColors.snow,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 2.sp,
             )
         }
         HorizontalDivider(Modifier.padding(top = 8.dp), color = ActiColors.outline)
